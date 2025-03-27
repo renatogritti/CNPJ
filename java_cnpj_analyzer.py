@@ -31,6 +31,8 @@ class AnaliseResponse(BaseModel):
     severidade: str = Field(description="ALTA (quebra código), MEDIA (requer adaptação) ou BAIXA (mudança simples)")
     horas_desenvolvimento: int = Field(description="Estimativa em horas para desenvolvimento")
     horas_testes: int = Field(description="Estimativa em horas para testes unitários")
+    dependencias: List[str] = Field(description="Outros métodos/classes que dependem ou são chamados")
+    sistemas_impactados: List[str] = Field(description="Outros sistemas/integrações impactados")
 
 class JavaCNPJAnalyzer:
     def __init__(self):
@@ -39,21 +41,20 @@ class JavaCNPJAnalyzer:
             api_key=os.getenv("ANTHROPIC_API_KEY")
         )
         self.parser = PydanticOutputParser(pydantic_object=AnaliseResponse)
+        self.all_methods = {}  # Armazenar todos os métodos para análise de dependências
         
         # Corrigir formatação do prompt usando uma raw string
         self.prompt = r"""
-Analise este código Java que manipula CNPJ:
+Analise este código Java que manipula CNPJ e suas dependências:
 
 {code}
 
 Retorne APENAS um JSON válido com o seguinte formato, sem texto adicional.
-IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
-- Complexidade do código
-- Necessidade de refatoração
-- Testes de regressão
-- Impacto em outras partes do sistema
-- Tempo de implementação realista
-- Cobertura adequada de testes
+IMPORTANTE: 
+- Identifique chamadas para outros métodos/classes
+- Analise integrações com outros sistemas
+- Verifique dependências em cascata
+- Considere impactos em APIs e serviços
 
 {{
     "tipo_uso": "NUMERICO|TEXTO|MISTO",
@@ -63,7 +64,9 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
     "modificacoes": ["lista", "de", "modificacoes"],
     "severidade": "ALTA|MEDIA|BAIXA",
     "horas_desenvolvimento": 0,
-    "horas_testes": 0
+    "horas_testes": 0,
+    "dependencias": ["lista", "de", "dependencias"],
+    "sistemas_impactados": ["lista", "de", "sistemas"]
 }}"""
 
     def scan_directory(self, directory):
@@ -76,18 +79,64 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
             content = f.read()
             lines = content.splitlines()
             
-        # Usar regex para encontrar métodos que contêm CNPJ
-        method_pattern = r'(public|private|protected)?\s+\w+\s+(\w+)\s*\([^)]*\)\s*\{[^}]*cnpj[^}]*\}'
-        for match in re.finditer(method_pattern, content, re.IGNORECASE | re.MULTILINE):
-            # Calcular linha inicial do método
-            start_line = content.count('\n', 0, match.start()) + 1
-            self.analyze_with_llm(match.group(), str(file_path), start_line)
+        # Primeira passagem: coletar todos os métodos
+        class_pattern = r'class\s+(\w+)'
+        method_pattern = r'(public|private|protected)?\s+\w+\s+(\w+)\s*\([^)]*\)\s*\{'
+        
+        current_class = None
+        for match in re.finditer(class_pattern, content):
+            current_class = match.group(1)
+        
+        for match in re.finditer(method_pattern, content):
+            method_name = match.group(2)
+            if current_class:
+                full_name = f"{current_class}.{method_name}"
+                self.all_methods[full_name] = {
+                    'file': str(file_path),
+                    'content': match.group(0),
+                    'line': content.count('\n', 0, match.start()) + 1
+                }
 
-    def analyze_with_llm(self, node, file_path, start_line):
+        # Segunda passagem: analisar métodos com CNPJ
+        cnpj_methods = re.finditer(r'(public|private|protected)?\s+\w+\s+(\w+)\s*\([^)]*\)\s*\{[^}]*cnpj[^}]*\}', 
+                                 content, re.IGNORECASE | re.MULTILINE)
+        
+        # Usar set para evitar métodos duplicados
+        analyzed_methods = set()
+        
+        for method in cnpj_methods:
+            method_name = self.extract_method_name(method.group())
+            method_signature = f"{str(file_path)}:{method_name}"
+            
+            # Pular se já analisou este método
+            if method_signature in analyzed_methods:
+                continue
+                
+            analyzed_methods.add(method_signature)
+            
+            start_line = content.count('\n', 0, method.start()) + 1
+            method_content = method.group()
+            
+            # Encontrar chamadas para outros métodos
+            calls = re.findall(r'(\w+)\s*\([^)]*\)', method_content)
+            dependencies = []
+            for call in calls:
+                for full_name, details in self.all_methods.items():
+                    if call in full_name:
+                        dependencies.append(f"{full_name} ({details['file']}:{details['line']})")
+            
+            self.analyze_with_llm(method_content, str(file_path), start_line, dependencies)
+
+    def analyze_with_llm(self, node, file_path, start_line, dependencies=None):
         try:
             logging.info(f"Iniciando análise do arquivo: {file_path}")
             logging.info(f"Enviando request para Claude...")
             
+            # Incluir dependências encontradas no prompt
+            contexto_extra = ""
+            if dependencies:
+                contexto_extra = "\nDependências encontradas:\n" + "\n".join(dependencies)
+
             message = self.client.messages.create(
                 model="claude-3-haiku-20240307",
                 max_tokens=1024,
@@ -96,7 +145,7 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
                 messages=[
                     {
                         "role": "user",
-                        "content": self.prompt.format(code=node)
+                        "content": self.prompt.format(code=node + contexto_extra)
                     }
                 ]
             )
@@ -146,7 +195,9 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
                 'severidade': analysis['severidade'],
                 'horas_dev': analysis['horas_desenvolvimento'],
                 'horas_teste': analysis['horas_testes'],
-                'horas_total': analysis['horas_desenvolvimento'] + analysis['horas_testes']
+                'horas_total': analysis['horas_desenvolvimento'] + analysis['horas_testes'],
+                'dependencias': "\n".join(dependencies) if dependencies else "Nenhuma dependência encontrada",
+                'sistemas_impactados': "\n".join(analysis.get('sistemas_impactados', []))
             })
         except Exception as e:
             logging.error(f"Erro na análise: {str(e)}", exc_info=True)
@@ -188,7 +239,10 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
             'bold': True,
             'bg_color': '#4472C4',
             'font_color': 'white',
-            'border': 1
+            'border': 1,
+            'text_wrap': True,
+            'align': 'center',
+            'valign': 'vcenter'
         })
         
         cell_format = workbook.add_format({
@@ -220,7 +274,9 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
             'severidade': 12,
             'horas_dev': 12,
             'horas_teste': 12,
-            'horas_total': 12
+            'horas_total': 12,
+            'dependencias': 50,
+            'sistemas_impactados': 30
         }
         
         for col_name, width in col_widths.items():
@@ -234,5 +290,19 @@ IMPORTANTE: Faça uma análise criteriosa das horas, considerando:
                     worksheet.write(row_num, col_num, df.iloc[row_num-1, col_num], number_format)
                 else:
                     worksheet.write(row_num, col_num, df.iloc[row_num-1, col_num], cell_format)
+        
+        # Adicionar uma nova aba para dependências
+        dep_sheet = workbook.add_worksheet('Dependências')
+        dep_sheet.write(0, 0, 'Método', header_format)
+        dep_sheet.write(0, 1, 'Dependências', header_format)
+        
+        row = 1
+        for finding in self.findings:
+            dep_sheet.write(row, 0, finding['metodo'])
+            dep_sheet.write(row, 1, finding['dependencias'])
+            row += 1
+        
+        dep_sheet.set_column(0, 0, 30)
+        dep_sheet.set_column(1, 1, 100)
         
         writer.close()
