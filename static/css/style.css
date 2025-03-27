@@ -108,6 +108,12 @@ th, td {
     color: var(--vscode-text);
 }
 
+table tfoot td {
+    border-top: 2px solid var(--vscode-border);
+    font-weight: bold;
+    background-color: var(--vscode-card-bg);
+}
+
 .btn-download {
     display: inline-flex;
     align-items: center;

@@ -159,6 +159,7 @@ function showError(message) {
 
 function updateResults(data) {
     const counts = {high: 0, medium: 0, low: 0};
+    const totals = {dev: 0, test: 0, total: 0};
     const tbody = document.querySelector('#resultsTable tbody');
     tbody.innerHTML = '';
     
@@ -167,18 +168,38 @@ function updateResults(data) {
         row.innerHTML = `
             <td>${item.arquivo}</td>
             <td>${item.metodo}</td>
+            <td>${item.linha}</td>
             <td>${item.tipo_uso}</td>
             <td>${item.severidade}</td>
-            <td>${item.esforco_dias}</td>
+            <td>${item.horas_dev}</td>
+            <td>${item.horas_teste}</td>
+            <td>${item.horas_total}</td>
         `;
         tbody.appendChild(row);
         
         if (item.severidade === 'ALTA') counts.high++;
         else if (item.severidade === 'MEDIA') counts.medium++;
         else if (item.severidade === 'BAIXA') counts.low++;
+        
+        totals.dev += item.horas_dev;
+        totals.test += item.horas_teste;
+        totals.total += item.horas_total;
     });
     
-    document.getElementById('highImpact').textContent = counts.high;
-    document.getElementById('mediumImpact').textContent = counts.medium;
-    document.getElementById('lowImpact').textContent = counts.low;
+    // Atualizar contadores e mostrar totais de forma separada
+    document.getElementById('highImpact').textContent = `${counts.high} métodos`;
+    document.getElementById('mediumImpact').textContent = `${counts.medium} métodos`;
+    document.getElementById('lowImpact').textContent = `${counts.low} métodos`;
+    
+    // Adicionar totais de horas na tabela
+    const tfoot = document.createElement('tfoot');
+    tfoot.innerHTML = `
+        <tr>
+            <td colspan="5" style="text-align: right"><strong>Total de Horas:</strong></td>
+            <td>${totals.dev.toFixed(1)}</td>
+            <td>${totals.test.toFixed(1)}</td>
+            <td><strong>${totals.total.toFixed(1)}</strong></td>
+        </tr>
+    `;
+    document.querySelector('#resultsTable').appendChild(tfoot);
 }

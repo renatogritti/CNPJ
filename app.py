@@ -4,6 +4,16 @@ from datetime import datetime
 import os
 from pathlib import Path
 import re
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('flask_app.log'),
+        logging.StreamHandler()
+    ]
+)
 
 app = Flask(__name__)
 analyzer = JavaCNPJAnalyzer()
@@ -18,11 +28,16 @@ def index():
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    logging.info("Iniciando nova análise")
     if 'directory' not in request.form:
+        logging.error("Diretório não especificado")
         return jsonify({'error': 'Diretório não especificado'}), 400
         
     directory = request.form['directory']
+    logging.info(f"Analisando diretório: {directory}")
+    
     if not os.path.exists(directory):
+        logging.error("Diretório não encontrado")
         return jsonify({'error': 'Diretório não encontrado'}), 404
 
     try:
@@ -33,12 +48,14 @@ def analyze():
         excel_file = os.path.join(REPORTS_DIR, f'analise_cnpj_{timestamp}.xlsx')
         analyzer.export_to_excel(excel_file)
         
+        logging.info(f"Análise concluída com sucesso. Relatório salvo em: {excel_file}")
         return jsonify({
             'status': 'success',
             'data': analyzer.findings,
             'excel_file': os.path.basename(excel_file)
         })
     except Exception as e:
+        logging.error(f"Erro durante a análise: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/pre-analyze', methods=['POST'])
