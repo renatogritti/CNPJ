@@ -1,0 +1,7 @@
+pandas
+xlsxwriter
+requests
+langchain
+langchain-community
+pydantic
+flask>=2.0.0
