@@ -54,7 +54,7 @@ function showTemporaryStats(stats) {
     codeStats.innerHTML = `
         <pre>Analisando:
 ${stats.subdirs} subdiretórios
-${stats.files} arquivos Java
+${stats.files} arquivos de Desenvolvimento
 ${stats.lines.toLocaleString()} linhas de código
 ${stats.methods} métodos com CNPJ</pre>
     `;
