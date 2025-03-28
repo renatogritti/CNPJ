@@ -46,19 +46,92 @@ async function analyzeProgress(directory) {
     }
 }
 
+// Adicione estas variáveis no escopo global
+let totalFiles = 0;
+let processedFiles = 0;
+let currentInterval = null;
+
 function showTemporaryStats(stats) {
-    const analyzing = document.querySelector('.analyzing');
-    const codeStats = document.createElement('div');
-    codeStats.className = 'code-stats';
-    codeStats.id = 'tempStats';
-    codeStats.innerHTML = `
+    const tempStats = document.getElementById('tempStats');
+    tempStats.innerHTML = `
         <pre>Analisando:
 ${stats.subdirs} subdiretórios
 ${stats.files} arquivos de Desenvolvimento
 ${stats.lines.toLocaleString()} linhas de código
 ${stats.methods} métodos com CNPJ</pre>
     `;
-    analyzing.appendChild(codeStats);
+    tempStats.style.display = 'block';
+    
+    // Inicializar o contador de arquivos global
+    totalFiles = stats.files;
+    processedFiles = 0;
+    
+    // Exibir elementos de progresso
+    const currentFileContainer = document.querySelector('.current-file-container');
+    const progressContainer = document.querySelector('.progress-container');
+    
+    if (currentFileContainer) currentFileContainer.style.display = 'block';
+    if (progressContainer) progressContainer.style.display = 'block';
+    
+    // Simular progresso enquanto a análise real acontece
+    simulateProgress();
+}
+
+function simulateProgress() {
+    // Limpar qualquer intervalo existente
+    if (currentInterval) clearInterval(currentInterval);
+    
+    // Simulação de processamento de arquivos
+    const simulatedFilesPerSecond = Math.max(1, Math.ceil(totalFiles / 60)); // Assumindo ~1 minuto total
+    const updateInterval = 1000; // 1 segundo
+    
+    currentInterval = setInterval(() => {
+        // Simular processamento de arquivos (1-3 por atualização)
+        const filesThisUpdate = Math.min(
+            Math.floor(Math.random() * simulatedFilesPerSecond) + 1, 
+            totalFiles - processedFiles
+        );
+        
+        processedFiles += filesThisUpdate;
+        
+        // Gerar um nome de arquivo aleatório para simular progresso
+        updateCurrentFile(`arquivo_${Math.floor(Math.random() * 1000)}.${getRandomExtension()}`);
+        
+        // Atualizar barra de progresso
+        updateProgressBar(processedFiles, totalFiles);
+        
+        // Quando terminar a simulação, parar o intervalo
+        if (processedFiles >= totalFiles) {
+            clearInterval(currentInterval);
+            currentInterval = null;
+        }
+    }, updateInterval);
+}
+
+function getRandomExtension() {
+    const extensions = ['java', 'cs', 'py', 'js', 'sql', 'html', 'go', 'cpp'];
+    return extensions[Math.floor(Math.random() * extensions.length)];
+}
+
+function updateCurrentFile(filename) {
+    const currentFileElement = document.getElementById('currentFile');
+    if (currentFileElement) {
+        currentFileElement.textContent = filename;
+    }
+}
+
+function updateProgressBar(current, total) {
+    if (total <= 0) return;
+    
+    const percentage = Math.min(100, Math.round((current / total) * 100));
+    
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const filesProcessed = document.getElementById('filesProcessed');
+    
+    if (progressBar) progressBar.style.width = percentage + '%';
+    if (progressText) progressText.textContent = percentage + '%';
+    if (filesProcessed) filesProcessed.textContent = `${current} / ${total} arquivos`;
 }
 
 async function preAnalyzeDirectory(directory) {
@@ -101,12 +174,12 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
         const stats = await preAnalyzeDirectory(directory);
         showTemporaryStats(stats);
         
-        updateStatus('Iniciando análise com LLM...');
+        updateStatus('Iniciando análise com AI...');
         
         const formData = new FormData();
         formData.append('directory', directory);
         
-        updateStatus('Analisando impactos com LLM...');
+        updateStatus('Analisando impactos com AI...');
         
         const response = await retryFetch('/analyze', {
             method: 'POST',
@@ -119,9 +192,14 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
             throw new Error(data.error);
         }
         
-        // Remover estatísticas temporárias apenas após sucesso
-        const tempStats = document.getElementById('tempStats');
-        if (tempStats) tempStats.remove();
+        // Limpar o intervalo de simulação quando terminar
+        if (currentInterval) {
+            clearInterval(currentInterval);
+            currentInterval = null;
+        }
+        
+        // Remover estatísticas temporárias e elementos de progresso
+        hideProgressElements();
         
         updateResults(data);
         analyzing.style.display = 'none';
@@ -132,9 +210,14 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
         downloadBtn.style.display = 'inline-flex';
         
     } catch (error) {
-        // Remover estatísticas temporárias em caso de erro
-        const tempStats = document.getElementById('tempStats');
-        if (tempStats) tempStats.remove();
+        // Limpar o intervalo de simulação em caso de erro
+        if (currentInterval) {
+            clearInterval(currentInterval);
+            currentInterval = null;
+        }
+        
+        // Esconder elementos de progresso
+        hideProgressElements();
         
         let errorMsg = 'Falha na conexão com o servidor. ';
         if (error.message === 'Failed to fetch') {
@@ -146,6 +229,17 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
         analyzing.style.display = 'none';
     }
 });
+
+function hideProgressElements() {
+    // Ocultar os elementos de progresso
+    const tempStats = document.getElementById('tempStats');
+    const currentFileContainer = document.querySelector('.current-file-container');
+    const progressContainer = document.querySelector('.progress-container');
+    
+    if (tempStats) tempStats.style.display = 'none';
+    if (currentFileContainer) currentFileContainer.style.display = 'none';
+    if (progressContainer) progressContainer.style.display = 'none';
+}
 
 function updateStatus(message) {
     document.querySelector('.status-text').textContent = message;
