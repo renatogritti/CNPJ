@@ -53,18 +53,32 @@ let currentInterval = null;
 
 function showTemporaryStats(stats) {
     const tempStats = document.getElementById('tempStats');
+    let byLanguageHtml = '';
+    
+    // Criar lista detalhada por linguagem
+    for (const [lang, count] of Object.entries(stats.by_language)) {
+        if (count > 0) {
+            byLanguageHtml += `${lang}: ${count} arquivos\n`;
+        }
+    }
+    
     tempStats.innerHTML = `
         <pre>Analisando:
 ${stats.subdirs} subdiretórios
 ${stats.files} arquivos de Desenvolvimento
 ${stats.lines.toLocaleString()} linhas de código
-${stats.methods} métodos com CNPJ</pre>
+${stats.methods} métodos com CNPJ
+
+Distribuição por linguagem:
+${byLanguageHtml}</pre>
     `;
     tempStats.style.display = 'block';
     
-    // Inicializar o contador de arquivos global
+    // Inicializar variáveis globais de progresso
     totalFiles = stats.files;
+    totalMethods = stats.methods;
     processedFiles = 0;
+    processedMethods = 0;
     
     // Exibir elementos de progresso
     const currentFileContainer = document.querySelector('.current-file-container');
@@ -73,35 +87,43 @@ ${stats.methods} métodos com CNPJ</pre>
     if (currentFileContainer) currentFileContainer.style.display = 'block';
     if (progressContainer) progressContainer.style.display = 'block';
     
-    // Simular progresso enquanto a análise real acontece
+    // Iniciar simulação de progresso
     simulateProgress();
 }
 
+let totalMethods = 0;
+let processedMethods = 0;
+
 function simulateProgress() {
-    // Limpar qualquer intervalo existente
     if (currentInterval) clearInterval(currentInterval);
     
-    // Simulação de processamento de arquivos
-    const simulatedFilesPerSecond = Math.max(1, Math.ceil(totalFiles / 60)); // Assumindo ~1 minuto total
-    const updateInterval = 1000; // 1 segundo
+    const simulatedFilesPerSecond = Math.max(1, Math.ceil(totalFiles / 60));
+    const updateInterval = 1000;
     
     currentInterval = setInterval(() => {
-        // Simular processamento de arquivos (1-3 por atualização)
         const filesThisUpdate = Math.min(
-            Math.floor(Math.random() * simulatedFilesPerSecond) + 1, 
+            Math.floor(Math.random() * simulatedFilesPerSecond) + 1,
             totalFiles - processedFiles
         );
         
         processedFiles += filesThisUpdate;
         
-        // Gerar um nome de arquivo aleatório para simular progresso
+        // Simular progresso de métodos também
+        if (totalMethods > 0) {
+            const methodsThisUpdate = Math.min(
+                Math.floor(Math.random() * (filesThisUpdate * 2)) + 1,
+                totalMethods - processedMethods
+            );
+            processedMethods += methodsThisUpdate;
+        }
+        
+        // Gerar nome de arquivo aleatório
         updateCurrentFile(`arquivo_${Math.floor(Math.random() * 1000)}.${getRandomExtension()}`);
         
-        // Atualizar barra de progresso
-        updateProgressBar(processedFiles, totalFiles);
+        // Atualizar barras de progresso
+        updateProgressBars(processedFiles, totalFiles, processedMethods, totalMethods);
         
-        // Quando terminar a simulação, parar o intervalo
-        if (processedFiles >= totalFiles) {
+        if (processedFiles >= totalFiles && processedMethods >= totalMethods) {
             clearInterval(currentInterval);
             currentInterval = null;
         }
@@ -120,18 +142,33 @@ function updateCurrentFile(filename) {
     }
 }
 
-function updateProgressBar(current, total) {
-    if (total <= 0) return;
+function updateProgressBars(files, totalFiles, methods, totalMethods) {
+    if (totalFiles <= 0) return;
     
-    const percentage = Math.min(100, Math.round((current / total) * 100));
+    const filePercentage = Math.min(100, Math.round((files / totalFiles) * 100));
+    const methodPercentage = totalMethods > 0 
+        ? Math.min(100, Math.round((methods / totalMethods) * 100))
+        : 100;
     
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
     const filesProcessed = document.getElementById('filesProcessed');
     
-    if (progressBar) progressBar.style.width = percentage + '%';
-    if (progressText) progressText.textContent = percentage + '%';
-    if (filesProcessed) filesProcessed.textContent = `${current} / ${total} arquivos`;
+    if (progressBar) {
+        progressBar.style.width = `${filePercentage}%`;
+        progressBar.style.background = `linear-gradient(90deg, 
+            var(--vscode-primary) ${methodPercentage}%, 
+            var(--deloitte-green) ${methodPercentage}%)`;
+    }
+    
+    if (progressText) {
+        progressText.textContent = `${filePercentage}%`;
+    }
+    
+    if (filesProcessed) {
+        filesProcessed.textContent = 
+            `${files}/${totalFiles} arquivos | ${methods}/${totalMethods} métodos`;
+    }
 }
 
 async function preAnalyzeDirectory(directory) {

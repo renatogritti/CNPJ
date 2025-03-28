@@ -35,7 +35,26 @@ class AnaliseResponse(BaseModel):
     sistemas_impactados: List[str] = Field(description="Outros sistemas/integrações impactados")
 
 class GenericCNPJAnalyzer:
+    """
+    Analisador genérico de código que busca e analisa o uso de CNPJ em diferentes linguagens.
+
+    Esta classe é responsável por escanear diretórios em busca de arquivos de código
+    contendo referências a CNPJ, analisar como o CNPJ é utilizado e gerar relatórios
+    detalhados sobre os impactos de possíveis mudanças no formato do CNPJ.
+
+    Attributes:
+        findings (list): Lista de resultados das análises
+        client (anthropic.Anthropic): Cliente para comunicação com a API do Claude
+        parser (PydanticOutputParser): Parser para validação de saída
+        all_methods (dict): Dicionário com todos os métodos encontrados
+        supported_extensions (dict): Mapeamento de extensões para linguagens suportadas
+        patterns (dict): Padrões regex para cada linguagem suportada
+    """
+
     def __init__(self):
+        """
+        Inicializa o analisador com as configurações padrão e carrega as variáveis de ambiente.
+        """
         self.findings = []
         self.client = anthropic.Anthropic(
             api_key=os.getenv("ANTHROPIC_API_KEY")
@@ -149,6 +168,15 @@ IMPORTANTE:
 }}"""
 
     def scan_directory(self, directory):
+        """
+        Escaneia um diretório em busca de arquivos de código com referências a CNPJ.
+
+        Args:
+            directory (str): Caminho do diretório a ser analisado
+
+        Returns:
+            None
+        """
         # Criar uma lista com todas as extensões para procurar
         all_extensions = []
         for ext_list in self.supported_extensions.values():
@@ -174,12 +202,31 @@ IMPORTANTE:
                 logging.info(f"{lang}: {cnpj_count[lang]} arquivos com CNPJ de {processed_count[lang]} processados")
     
     def detect_language(self, extension):
+        """
+        Detecta a linguagem de programação baseada na extensão do arquivo.
+
+        Args:
+            extension (str): Extensão do arquivo (com ponto)
+
+        Returns:
+            str: Nome da linguagem ou None se não suportada
+        """
         for language, extensions in self.supported_extensions.items():
             if extension in extensions:
                 return language
         return None  # Linguagem não suportada
     
     def analyze_file(self, file_path, language):
+        """
+        Analisa um arquivo específico em busca de uso de CNPJ.
+
+        Args:
+            file_path (Path): Caminho do arquivo a ser analisado
+            language (str): Linguagem de programação do arquivo
+
+        Returns:
+            bool: True se encontrou CNPJ, False caso contrário
+        """
         try:
             with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                 content = f.read()
@@ -416,6 +463,19 @@ IMPORTANTE:
             return False
 
     def analyze_with_llm(self, node, file_path, start_line, language, dependencies=None):
+        """
+        Analisa um trecho de código usando o modelo de linguagem Claude.
+
+        Args:
+            node (str): Trecho de código a ser analisado
+            file_path (str): Caminho do arquivo
+            start_line (int): Número da linha inicial
+            language (str): Linguagem de programação
+            dependencies (list, optional): Lista de dependências encontradas
+
+        Returns:
+            None
+        """
         try:
             logging.info(f"Analisando código {language}: {file_path}")
             
@@ -498,6 +558,16 @@ IMPORTANTE:
             })
 
     def extract_method_name(self, method_code, language):
+        """
+        Extrai o nome do método de um trecho de código.
+
+        Args:
+            method_code (str): Código do método
+            language (str): Linguagem de programação
+
+        Returns:
+            str: Nome do método ou 'unknown' se não encontrado
+        """
         # Padrões específicos para cada linguagem
         patterns = {
             'java': r'(?:public|private|protected)?\s+(?:static\s+)?[\w<>\[\]]+\s+(\w+)\s*\(',
@@ -523,10 +593,25 @@ IMPORTANTE:
         return "unknown"
 
     def generate_report(self):
+        """
+        Gera um DataFrame pandas com os resultados da análise.
+
+        Returns:
+            pandas.DataFrame: DataFrame contendo os resultados
+        """
         df = pd.DataFrame(self.findings)
         return df
 
     def export_to_excel(self, filename):
+        """
+        Exporta os resultados da análise para um arquivo Excel formatado.
+
+        Args:
+            filename (str): Nome do arquivo Excel a ser gerado
+
+        Returns:
+            None
+        """
         df = self.generate_report()
         
         # Configurar formatação do Excel

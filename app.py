@@ -1,3 +1,10 @@
+"""
+Aplicação Flask para interface web do analisador de CNPJ.
+
+Este módulo fornece uma interface web para o GenericCNPJAnalyzer,
+permitindo que usuários realizem análises de código através do navegador.
+"""
+
 from flask import Flask, render_template, request, jsonify, send_file
 from generic_cnpj_analyzer import GenericCNPJAnalyzer
 from datetime import datetime
@@ -24,10 +31,25 @@ os.makedirs(REPORTS_DIR, exist_ok=True)
 
 @app.route('/')
 def index():
+    """
+    Rota principal que renderiza a página inicial.
+
+    Returns:
+        str: HTML da página inicial
+    """
     return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    """
+    Rota para executar a análise completa de um diretório.
+
+    Espera receber o caminho do diretório via POST.
+    Gera um relatório Excel com os resultados.
+
+    Returns:
+        Response: JSON com status da análise e caminho do relatório
+    """
     logging.info("Iniciando nova análise")
     if 'directory' not in request.form:
         logging.error("Diretório não especificado")
@@ -61,6 +83,15 @@ def analyze():
 
 @app.route('/pre-analyze', methods=['POST'])
 def pre_analyze():
+    """
+    Rota para análise prévia do diretório.
+
+    Realiza uma análise rápida para contar arquivos e métodos,
+    sem executar a análise completa.
+
+    Returns:
+        Response: JSON com estatísticas preliminares
+    """
     if 'directory' not in request.form:
         return jsonify({'error': 'Diretório não especificado'}), 400
         
@@ -180,6 +211,15 @@ def pre_analyze():
 
 @app.route('/download/<filename>')
 def download(filename):
+    """
+    Rota para download do relatório Excel gerado.
+
+    Args:
+        filename (str): Nome do arquivo a ser baixado
+
+    Returns:
+        Response: Arquivo Excel para download
+    """
     return send_file(
         os.path.join(REPORTS_DIR, filename),
         as_attachment=True,

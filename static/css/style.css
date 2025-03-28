@@ -260,6 +260,7 @@ table tfoot td {
     justify-content: space-between;
     margin-bottom: 5px;
     font-size: 0.85rem;
+    color: var(--vscode-text);
 }
 
 .progress-bar {
@@ -271,9 +272,14 @@ table tfoot td {
 
 .progress-fill {
     height: 100%;
-    background-color: #0073ea;
+    background: linear-gradient(90deg, var(--vscode-primary), var(--deloitte-green));
     border-radius: 4px;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+#filesProcessed {
+    font-family: var(--font-mono);
+    white-space: nowrap;
 }
 
 .code-stats {
