@@ -91,8 +91,8 @@ class GenericCNPJAnalyzer:
                 'cnpj_method': None
             },
             'cpp': {
-                'class': r'(?:class|struct)\s+(\w+)',
-                'method': r'(?:virtual\s+)?[\w:~\*<>\[\]]+\s+(\w+)\s*\([^;]*\)(?:\s*const)?\s*(?:\{|override|final)',
+                'class': r'(?:class|struct)\s+(\w+)(?:\s*:\s*[\w\s,:<>]+)?(?=\s*\{)',
+                'method': r'(?:(?:virtual|static|explicit|inline|constexpr)\s+)?(?:[\w:~\*<>\[\]&]+\s+)?(\w+)\s*\([^{;]*\)(?:\s*(?:const|noexcept|override|final|=\s*0))?\s*(?=\{)',
                 'cnpj_method': None
             },
             'html': {
@@ -212,7 +212,9 @@ IMPORTANTE:
                 # Padrão específico e mais abrangente para C#
                 patterns['cnpj_method'] = r'(?:public|private|protected|internal)?\s+(?:static\s+|virtual\s+|async\s+|override\s+|readonly\s+)?[\w<>\[\]\.]+\s+(\w+)\s*\([^)]*\)\s*(?:\{|=>|\s*where)[^}]*(?:cnpj|CNPJ|Cnpj)[^}]*\}'
             elif language == 'cpp':
-                patterns['cnpj_method'] = patterns['method'].replace(')', r')[^}]*(?:' + lang_cnpj_pattern + r')[^}]*\}')
+                # Padrão específico e mais abrangente para C++
+                patterns['cnpj_method'] = r'(?:(?:virtual|static|explicit|inline|constexpr)\s+)?(?:[\w:~\*<>\[\]&]+\s+)?(\w+)\s*\([^{;]*\)(?:\s*(?:const|noexcept|override|final|=\s*0))?\s*\{[^}]*(?:cnpj|CNPJ|Cnpj)[^}]*\}'
+                logging.debug(f"Usando padrão C++ melhorado: {patterns['cnpj_method']}")
             elif language == 'python':
                 patterns['cnpj_method'] = patterns['method'] + r'(?:[^#]*?(?:' + lang_cnpj_pattern + r'))'
             elif language == 'sql':
@@ -371,6 +373,22 @@ IMPORTANTE:
                     except Exception as e:
                         logging.error(f"Erro ao tentar fallback C#: {str(e)}")
                 
+                # Verificação especial para C++
+                elif language == 'cpp':
+                    # Tentar encontrar métodos de forma menos restritiva
+                    fallback_pattern = r'[\w:~<>\[\]&\*]+\s+(\w+)\s*\([^)]*\)\s*\{[^}]*(?:cnpj|CNPJ|Cnpj)[^}]*\}'
+                    try:
+                        fallback_methods = list(re.finditer(fallback_pattern, content, re.IGNORECASE | re.MULTILINE | re.DOTALL))
+                        if fallback_methods:
+                            logging.info(f"Fallback: Encontrados {len(fallback_methods)} métodos C++ com CNPJ")
+                            for method in fallback_methods:
+                                method_name = self.extract_method_name(method.group(), 'cpp')
+                                start_line = content.count('\n', 0, method.start()) + 1
+                                self.analyze_with_llm(method.group(), str(file_path), start_line, 'cpp', [])
+                            return has_cnpj
+                    except Exception as e:
+                        logging.error(f"Erro ao tentar fallback C++: {str(e)}")
+                
                 # Arquivos especiais como HTML, SQL que podem não ter métodos
                 if language in ['html', 'sql'] or (
                    language in ['javascript', 'python', 'c', 'cpp'] and 
@@ -485,7 +503,7 @@ IMPORTANTE:
             'java': r'(?:public|private|protected)?\s+(?:static\s+)?[\w<>\[\]]+\s+(\w+)\s*\(',
             'csharp': r'(?:public|private|protected|internal)?\s+(?:static\s+|virtual\s+|async\s+|override\s+|readonly\s+)?[\w<>\[\]\.]+\s+(\w+)\s*\(',
             'c': r'[\w\*]+\s+(\w+)\s*\(',
-            'cpp': r'(?:virtual\s+)?[\w:~\*<>\[\]]+\s+(\w+)\s*\(',
+            'cpp': r'(?:[\w:~\*<>\[\]&]+\s+)?(\w+)\s*\(',
             'html': r'function\s+(\w+)|(\w+)\s*=\s*function',
             'javascript': r'function\s+(\w+)|const\s+(\w+)|let\s+(\w+)|var\s+(\w+)|(\w+)\s*:\s*function',
             'python': r'def\s+(\w+)\s*\(',
