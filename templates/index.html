@@ -1,124 +1,206 @@
+CNPJ\templates\index.html -->
 <!DOCTYPE html>
-<html data-theme="dark">
+<html lang="pt-br">
 <head>
-    <title>Analisador de Impacto CNPJ</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeloitteScan | Análise de Impacto CNPJ</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
 </head>
 <body>
-    <div class="header-logo">
-        <img src="{{ url_for('static', filename='image/Deloitte-Logo.png') }}" 
-             alt="Deloitte Logo">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='image/Deloitte-Logo.png') }}" alt="Deloitte Logo">
+            </div>
+            <nav class="nav-steps">
+                <ul>
+                    <li class="active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Selecionar Código</span>
+                    </li>
+                    <li data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Análise AI</span>
+                    </li>
+                    <li data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Resultados</span>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <p>CNPJ Inventory Analyzer</p>
+                <span></span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Análise de Impacto <span class="accent">CNPJ Alfanumérico</span></h1>
+                <p class="subtitle"></p>
+            </header>
+
+            <!-- Step 1: Code Selection -->
+            <section class="step-section active" id="step1">
+                <div class="glass-card">
+                    <h2><span class="material-icons">folder_open</span> Selecione a Pasta com o Código</h2>
+                    <form id="analyzeForm">
+                        <div class="input-container">
+                            <div class="input-group">
+                                <input type="text" id="directory" name="directory" placeholder="Caminho do diretório para análise" readonly>
+                                <button type="button" class="btn-browse" onclick="openDirectoryDialog()">
+                                    <span class="material-icons">folder_open</span>
+                                </button>
+                            </div>
+                            <button type="submit" class="btn-analyze pulse">
+                                <span class="material-icons">search</span>
+                                Iniciar Análise
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Step 2: Analysis Progress -->
+            <section class="step-section" id="step2">
+                <div class="glass-card">
+                    <h2><span class="material-icons">psychology</span> Análise em Andamento</h2>
+                    <div class="analyzing">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                        <p class="analyzing-text">Análise com IA em andamento</p>
+                        <p class="status-text"></p>
+                        
+                        <!-- Gráfico de distribuição de linguagens -->
+                        <div class="language-chart-container" style="display: none;">
+                            <h3>Distribuição por Linguagem de Programação</h3>
+                            <div class="chart-wrapper">
+                                <canvas id="languageDistChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="code-stats" id="tempStats" style="display: none;"></div>
+                        
+                        <div class="current-file-container" style="display: none;">
+                            <div class="file-icon">
+                                <span class="material-icons">description</span>
+                            </div>
+                            <div class="file-info">
+                                <span class="label">Analisando métodos CNPJ:</span>
+                                <span id="currentFile" class="filename">-</span>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container" style="display: none;">
+                            <div class="progress-info">
+                                <span id="progressText">0%</span>
+                                <span id="filesProcessed">0 / 0 métodos</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 3: Results -->
+            <section class="step-section" id="step3">
+                <div class="glass-card results-summary">
+                    <h2><span class="material-icons">assessment</span> Sumário de Impacto</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card high">
+                            <div class="stat-icon">
+                                <span class="material-icons">warning</span>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Alto Impacto</h3>
+                                <p id="highImpact">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card medium">
+                            <div class="stat-icon">
+                                <span class="material-icons">info</span>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Médio Impacto</h3>
+                                <p id="mediumImpact">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card low">
+                            <div class="stat-icon">
+                                <span class="material-icons">check_circle</span>
+                            </div>
+                            <div class="stat-content">
+                                <h3>Baixo Impacto</h3>
+                                <p id="lowImpact">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h2><span class="material-icons">list</span> Detalhamento de Impactos</h2>
+                    <div class="table-container">
+                        <table id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th>Arquivo</th>
+                                    <th>Met/Func</th>
+                                    <th>Linha</th>
+                                    <th>Tipo Uso</th>
+                                    <th>Severidade</th>
+                                    <th>Dev (h)</th>
+                                    <th>Teste (h)</th>
+                                    <th>Total (h)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div class="action-buttons">
+                        <a id="downloadExcel" class="btn-download" style="display: none;">
+                            <span class="material-icons">download</span>
+                            Baixar Relatório Excel
+                        </a>
+                        <button class="btn-new-analysis" onclick="resetAnalysis()">
+                            <span class="material-icons">refresh</span>
+                            Nova Análise
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Message -->
+            <div class="error-message" style="display: none;">
+                <div class="error-icon">
+                    <span class="material-icons">error</span>
+                </div>
+                <div class="error-content">
+                    <h3>Erro na Análise</h3>
+                    <p></p>
+                </div>
+                <button onclick="retryLastAnalysis()" class="btn-retry">
+                    <span class="material-icons">refresh</span>
+                    Tentar Novamente
+                </button>
+            </div>
+        </main>
     </div>
-    
-    <div class="container">
-        <header>
-            <h1>Novo CNPJ</h1>
-            <p>Análise de impacto para mudança de CNPJ numérico para alfanumérico</p>
-        </header>
 
-        <div class="upload-section">
-            <form id="analyzeForm">
-                <div class="input-group">
-                    <input type="text" id="directory" name="directory" placeholder="Caminho do diretório dos Códigos" readonly>
-                    <button type="button" class="btn-browse" onclick="openDirectoryDialog()">
-                        <span class="material-icons">folder_open</span>
-                        Selecionar
-                    </button>
-                    <button type="submit" class="btn-analyze">
-                        <span class="material-icons">search</span>
-                        Analisar
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="analyzing" style="display: none;">
-            <div class="spinner"></div>
-            <p class="analyzing-text">Analisando código...</p>
-            <p class="status-text"></p>
-            
-            <!-- Novo elemento para estatísticas temporárias -->
-            <div class="code-stats" id="tempStats" style="display: none;"></div>
-            
-            <!-- Novo elemento para mostrar arquivo atual sendo analisado -->
-            <div class="current-file-container" style="display: none;">
-                <p>Analisando arquivo: <span id="currentFile">-</span></p>
-            </div>
-            
-            <!-- Barra de progresso com texto -->
-            <div class="progress-container" style="display: none;">
-                <div class="progress-info">
-                    <span id="progressText">0%</span>
-                    <span id="filesProcessed">0 / 0 arquivos</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressBar" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="progress-bar" style="display: none;">
-            <div class="progress"></div>
-        </div>
-
-        <div class="results" style="display: none;">
-            <h2>Resultados da Análise</h2>
-            <div class="stats">
-                <div class="stat-card">
-                    <span class="material-icons">warning</span>
-                    <h3>Alto Impacto</h3>
-                    <p id="highImpact">0</p>
-                </div>
-                <div class="stat-card">
-                    <span class="material-icons">info</span>
-                    <h3>Médio Impacto</h3>
-                    <p id="mediumImpact">0</p>
-                </div>
-                <div class="stat-card">
-                    <span class="material-icons">check_circle</span>
-                    <h3>Baixo Impacto</h3>
-                    <p id="lowImpact">0</p>
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <table id="resultsTable">
-                    <thead>
-                        <tr>
-                            <th>Arquivo</th>
-                            <th>Método</th>
-                            <th>Linha</th>
-                            <th>Tipo Uso</th>
-                            <th>Severidade</th>
-                            <th>Dev (h)</th>
-                            <th>Teste (h)</th>
-                            <th>Total (h)</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <div class="download-section">
-                <a id="downloadExcel" class="btn-download" style="display: none;">
-                    <span class="material-icons">download</span>
-                    Baixar Relatório Excel
-                </a>
-            </div>
-        </div>
-
-        <div class="error-message" style="display: none;">
-            <span class="material-icons">error</span>
-            <p></p>
-            <button onclick="retryLastAnalysis()" class="btn-retry">
-                <span class="material-icons">refresh</span>
-                Tentar Novamente
-            </button>
-        </div>
-
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

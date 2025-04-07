@@ -3,6 +3,7 @@ async function openDirectoryDialog() {
         const handle = await window.showDirectoryPicker();
         const directory = handle.name;
         document.getElementById('directory').value = directory;
+        document.querySelector('.btn-analyze').classList.add('pulse');
     } catch (err) {
         showError('Erro ao selecionar diretório');
     }
@@ -46,9 +47,11 @@ async function analyzeProgress(directory) {
     }
 }
 
-// Adicione estas variáveis no escopo global
+// Variáveis globais para controle de progresso
 let totalFiles = 0;
 let processedFiles = 0;
+let totalMethods = 0;
+let processedMethods = 0;
 let currentInterval = null;
 
 function showTemporaryStats(stats) {
@@ -76,98 +79,122 @@ ${byLanguageHtml}</pre>
     
     // Inicializar variáveis globais de progresso
     totalFiles = stats.files;
-    totalMethods = stats.methods;
+    totalMethods = stats.methods || 50; // Valor mínimo para demonstração
     processedFiles = 0;
     processedMethods = 0;
     
-    // Exibir elementos de progresso
-    const currentFileContainer = document.querySelector('.current-file-container');
-    const progressContainer = document.querySelector('.progress-container');
+    // Primeiro criar e exibir o gráfico
+    const languageChartContainer = document.querySelector('.language-chart-container');
+    if (languageChartContainer) languageChartContainer.style.display = 'block';
+    createLanguageChart(stats);
     
-    if (currentFileContainer) currentFileContainer.style.display = 'block';
-    if (progressContainer) progressContainer.style.display = 'block';
-    
-    // Iniciar simulação de progresso
-    simulateProgress();
+    // Depois exibir a barra de progresso e container de arquivo atual
+    setTimeout(() => {
+        const currentFileContainer = document.querySelector('.current-file-container');
+        const progressContainer = document.querySelector('.progress-container');
+        
+        if (currentFileContainer) currentFileContainer.style.display = 'flex';
+        if (progressContainer) progressContainer.style.display = 'block';
+        
+        // Iniciar simulação do progresso dos métodos
+        startMethodProgressSimulation();
+    }, 800); // Pequeno atraso para melhor UX
 }
 
-let totalMethods = 0;
-let processedMethods = 0;
-
-function simulateProgress() {
-    if (currentInterval) clearInterval(currentInterval);
+// Função completamente reescrita para simular o progresso dos métodos
+function startMethodProgressSimulation() {
+    // Limpar qualquer intervalo existente
+    if (currentInterval) {
+        clearInterval(currentInterval);
+        currentInterval = null;
+    }
     
-    const simulatedFilesPerSecond = Math.max(1, Math.ceil(totalFiles / 60));
-    const updateInterval = 1000;
+    // Reiniciar contadores
+    processedMethods = 0;
+    
+    // Nomes de métodos relacionados a CNPJ para simulação
+    const methodNames = [
+        'validarCNPJ', 'formatarCNPJ', 'extrairCNPJ', 'verificarCNPJ', 
+        'salvarCNPJ', 'buscarPorCNPJ', 'converterCNPJ', 'carregarCNPJ',
+        'analisarCNPJ', 'consultarCNPJ', 'enviarCNPJ', 'processarCNPJ',
+        'validarFormatoCNPJ', 'desformatarCNPJ', 'exibirCNPJ', 'filtrarCNPJ'
+    ];
+    
+    const classNames = [
+        'Cliente', 'Empresa', 'Cadastro', 'Fiscal', 'Documento', 'Registro',
+        'Pessoa', 'Fornecedor', 'Emissor', 'Receptor', 'Contribuinte', 'Servico'
+    ];
+    
+    // Duração total desejada da simulação (ms)
+    const totalDuration = 25000; // 25 segundos
+    
+    // Intervalo entre atualizações
+    const updateInterval = 300; // 300ms
+    
+    // Calcular incremento por atualização
+    const totalUpdates = totalDuration / updateInterval;
+    const methodsPerUpdate = Math.max(1, Math.ceil(totalMethods / totalUpdates));
+    
+    // Atualizar a UI com 0%
+    updateProgressUI(0, totalMethods);
+    updateCurrentFile('Iniciando análise...');
     
     currentInterval = setInterval(() => {
-        const filesThisUpdate = Math.min(
-            Math.floor(Math.random() * simulatedFilesPerSecond) + 1,
-            totalFiles - processedFiles
+        // Calcular quantos métodos processar nesta iteração
+        const increment = Math.min(
+            methodsPerUpdate,
+            totalMethods - processedMethods
         );
         
-        processedFiles += filesThisUpdate;
+        processedMethods += increment;
         
-        // Simular progresso de métodos também
-        if (totalMethods > 0) {
-            const methodsThisUpdate = Math.min(
-                Math.floor(Math.random() * (filesThisUpdate * 2)) + 1,
-                totalMethods - processedMethods
-            );
-            processedMethods += methodsThisUpdate;
-        }
+        // Gerar nome de método aleatório
+        const randomMethod = methodNames[Math.floor(Math.random() * methodNames.length)];
+        const randomClass = classNames[Math.floor(Math.random() * classNames.length)];
+        updateCurrentFile(`${randomClass}.${randomMethod}()`);
         
-        // Gerar nome de arquivo aleatório
-        updateCurrentFile(`arquivo_${Math.floor(Math.random() * 1000)}.${getRandomExtension()}`);
+        // Atualizar a UI com o progresso atual
+        updateProgressUI(processedMethods, totalMethods);
         
-        // Atualizar barras de progresso
-        updateProgressBars(processedFiles, totalFiles, processedMethods, totalMethods);
-        
-        if (processedFiles >= totalFiles && processedMethods >= totalMethods) {
+        // Verificar se a simulação terminou
+        if (processedMethods >= totalMethods) {
             clearInterval(currentInterval);
             currentInterval = null;
+            
+            // Mostrar 100% e mensagem de conclusão
+            updateProgressUI(totalMethods, totalMethods);
+            updateCurrentFile("Análise concluída! Gerando relatório...");
         }
     }, updateInterval);
 }
 
-function getRandomExtension() {
-    const extensions = ['java', 'cs', 'py', 'js', 'sql', 'html', 'go', 'cpp'];
-    return extensions[Math.floor(Math.random() * extensions.length)];
-}
-
-function updateCurrentFile(filename) {
-    const currentFileElement = document.getElementById('currentFile');
-    if (currentFileElement) {
-        currentFileElement.textContent = filename;
-    }
-}
-
-function updateProgressBars(files, totalFiles, methods, totalMethods) {
-    if (totalFiles <= 0) return;
+// Função para atualizar a interface com o progresso atual
+function updateProgressUI(current, total) {
+    if (total <= 0) return;
     
-    const filePercentage = Math.min(100, Math.round((files / totalFiles) * 100));
-    const methodPercentage = totalMethods > 0 
-        ? Math.min(100, Math.round((methods / totalMethods) * 100))
-        : 100;
+    const percentage = Math.min(100, Math.round((current / total) * 100));
     
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
     const filesProcessed = document.getElementById('filesProcessed');
     
     if (progressBar) {
-        progressBar.style.width = `${filePercentage}%`;
-        progressBar.style.background = `linear-gradient(90deg, 
-            var(--vscode-primary) ${methodPercentage}%, 
-            var(--deloitte-green) ${methodPercentage}%)`;
+        progressBar.style.width = `${percentage}%`;
     }
     
     if (progressText) {
-        progressText.textContent = `${filePercentage}%`;
+        progressText.textContent = `${percentage}%`;
     }
     
     if (filesProcessed) {
-        filesProcessed.textContent = 
-            `${files}/${totalFiles} arquivos | ${methods}/${totalMethods} métodos`;
+        filesProcessed.textContent = `${current}/${total} métodos analisados`;
+    }
+}
+
+function updateCurrentFile(filename) {
+    const currentFileElement = document.getElementById('currentFile');
+    if (currentFileElement) {
+        currentFileElement.textContent = filename;
     }
 }
 
@@ -193,18 +220,14 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     const directory = document.getElementById('directory').value;
-    const analyzing = document.querySelector('.analyzing');
-    const results = document.querySelector('.results');
-    const errorMessage = document.querySelector('.error-message');
     
     if (!directory) {
         showError('Por favor, selecione um diretório');
         return;
     }
     
-    analyzing.style.display = 'block';
-    results.style.display = 'none';
-    errorMessage.style.display = 'none';
+    // Ir para o passo 2
+    goToStep(2);
     
     try {
         updateStatus('Analisando estrutura do projeto...');
@@ -238,13 +261,17 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
         // Remover estatísticas temporárias e elementos de progresso
         hideProgressElements();
         
+        // Atualizar resultados e ir para o passo 3
         updateResults(data);
-        analyzing.style.display = 'none';
-        results.style.display = 'block';
+        goToStep(3);
         
+        // Mostrar botão de download
         const downloadBtn = document.getElementById('downloadExcel');
         downloadBtn.href = `/download/${data.excel_file}`;
         downloadBtn.style.display = 'inline-flex';
+        
+        // Criar gráfico
+        createImpactChart();
         
     } catch (error) {
         // Limpar o intervalo de simulação em caso de erro
@@ -263,7 +290,9 @@ document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
             errorMsg += error.message;
         }
         showError(errorMsg);
-        analyzing.style.display = 'none';
+        
+        // Voltar para o passo 1
+        goToStep(1);
     }
 });
 
@@ -272,10 +301,14 @@ function hideProgressElements() {
     const tempStats = document.getElementById('tempStats');
     const currentFileContainer = document.querySelector('.current-file-container');
     const progressContainer = document.querySelector('.progress-container');
+    const languageChartContainer = document.querySelector('.language-chart-container');
+    const aiInsightsContainer = document.querySelector('.ai-insights-container');
     
     if (tempStats) tempStats.style.display = 'none';
     if (currentFileContainer) currentFileContainer.style.display = 'none';
     if (progressContainer) progressContainer.style.display = 'none';
+    if (languageChartContainer) languageChartContainer.style.display = 'none';
+    if (aiInsightsContainer) aiInsightsContainer.style.display = 'none';
 }
 
 function updateStatus(message) {
@@ -286,6 +319,11 @@ function showError(message) {
     const errorDiv = document.querySelector('.error-message');
     errorDiv.querySelector('p').textContent = message;
     errorDiv.style.display = 'flex';
+    
+    // Auto-hide after 10 seconds
+    setTimeout(() => {
+        errorDiv.style.display = 'none';
+    }, 10000);
 }
 
 function updateResults(data) {
@@ -333,4 +371,301 @@ function updateResults(data) {
         </tr>
     `;
     document.querySelector('#resultsTable').appendChild(tfoot);
+}
+
+// Adicionar funcionalidade de troca de etapas
+function goToStep(stepNumber) {
+    // Atualizar sidebar
+    document.querySelectorAll('.nav-steps li').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`.nav-steps li[data-step="${stepNumber}"]`).classList.add('active');
+    
+    // Atualizar conteúdo
+    document.querySelectorAll('.step-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById(`step${stepNumber}`).classList.add('active');
+}
+
+// Adicionar eventos de clique à navegação lateral
+document.querySelectorAll('.nav-steps li').forEach(item => {
+    item.addEventListener('click', () => {
+        const step = item.getAttribute('data-step');
+        goToStep(step);
+    });
+});
+
+// Função para resetar análise
+function resetAnalysis() {
+    // Limpar resultados
+    document.getElementById('highImpact').textContent = '0';
+    document.getElementById('mediumImpact').textContent = '0';
+    document.getElementById('lowImpact').textContent = '0';
+    document.querySelector('#resultsTable tbody').innerHTML = '';
+    
+    // Voltar para o passo 1
+    goToStep(1);
+    
+    // Ocultar download
+    document.getElementById('downloadExcel').style.display = 'none';
+}
+
+// Função para criar gráfico de impacto
+function createImpactChart() {
+    const ctx = document.getElementById('impactChart').getContext('2d');
+    
+    const highImpact = parseInt(document.getElementById('highImpact').textContent);
+    const mediumImpact = parseInt(document.getElementById('mediumImpact').textContent);
+    const lowImpact = parseInt(document.getElementById('lowImpact').textContent);
+    
+    // Destruir gráfico existente se houver
+    if (window.impactChart instanceof Chart) {
+        window.impactChart.destroy();
+    }
+    
+    window.impactChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Alto Impacto', 'Médio Impacto', 'Baixo Impacto'],
+            datasets: [{
+                data: [highImpact, mediumImpact, lowImpact],
+                backgroundColor: [
+                    'rgba(255, 71, 87, 0.8)',
+                    'rgba(255, 165, 2, 0.8)',
+                    'rgba(46, 213, 115, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(255, 71, 87, 1)',
+                    'rgba(255, 165, 2, 1)',
+                    'rgba(46, 213, 115, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            family: "'Inter', sans-serif",
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: {
+                        family: "'Inter', sans-serif",
+                        size: 14
+                    },
+                    bodyFont: {
+                        family: "'Inter', sans-serif",
+                        size: 13
+                    },
+                    padding: 12
+                }
+            },
+            cutout: '65%',
+            animation: {
+                animateScale: true,
+                animateRotate: true,
+                duration: 1000
+            }
+        }
+    });
+}
+
+// Função para tentar novamente a última análise
+function retryLastAnalysis() {
+    const form = document.getElementById('analyzeForm');
+    if (form) form.dispatchEvent(new Event('submit'));
+}
+
+// Adicionar estas funções após a função showTemporaryStats
+
+function createLanguageChart(stats) {
+    const languageChartContainer = document.querySelector('.language-chart-container');
+    if (!languageChartContainer) return;
+    
+    languageChartContainer.style.display = 'block';
+    
+    const ctx = document.getElementById('languageDistChart').getContext('2d');
+    const languages = [];
+    const counts = [];
+    const colors = [
+        'rgba(54, 162, 235, 0.8)',
+        'rgba(255, 99, 132, 0.8)',
+        'rgba(255, 206, 86, 0.8)',
+        'rgba(75, 192, 192, 0.8)',
+        'rgba(153, 102, 255, 0.8)',
+        'rgba(255, 159, 64, 0.8)',
+        'rgba(199, 199, 199, 0.8)',
+        'rgba(83, 102, 255, 0.8)',
+    ];
+    
+    let totalFiles = 0;
+    
+    // Extrair dados por linguagem
+    for (const [lang, count] of Object.entries(stats.by_language)) {
+        if (count > 0) {
+            languages.push(lang.charAt(0).toUpperCase() + lang.slice(1));
+            counts.push(count);
+            totalFiles += count;
+        }
+    }
+    
+    // Se não houver linguagens, adicionar dados dummy para evitar erro
+    if (languages.length === 0) {
+        languages.push('Sem dados');
+        counts.push(1);
+    }
+    
+    // Destruir gráfico existente se houver
+    if (window.languageChart instanceof Chart) {
+        window.languageChart.destroy();
+    }
+    
+    // Criar novo gráfico com ajustes para tamanho
+    window.languageChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: languages,
+            datasets: [{
+                data: counts,
+                backgroundColor: colors.slice(0, languages.length),
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 5,
+                    bottom: 5
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12,
+                        padding: 10,
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            family: "'Inter', sans-serif",
+                            size: 10
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const percentage = Math.round((value / totalFiles) * 100);
+                            return `${label}: ${value} arquivos (${percentage}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '60%',
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 800
+            }
+        }
+    });
+    
+    // Adicionar insights de AI com base nos dados
+    addAIInsight(stats);
+}
+
+function addAIInsight(stats) {
+    const analyzing = document.querySelector('.analyzing');
+    if (!analyzing) return;
+    
+    // Criar container de insights se não existir
+    let insightsContainer = document.querySelector('.ai-insights-container');
+    if (!insightsContainer) {
+        insightsContainer = document.createElement('div');
+        insightsContainer.className = 'ai-insights-container';
+        analyzing.appendChild(insightsContainer);
+    }
+    
+    // Criar insights baseados nos dados
+    const insights = [
+        {
+            title: "Distribuição de Código",
+            content: generateDistributionInsight(stats)
+        },
+        {
+            title: "Complexidade Estimada",
+            content: generateComplexityInsight(stats)
+        },
+        {
+            title: "Uso de CNPJ",
+            content: `Encontrados ${stats.methods} métodos que manipulam CNPJ em ${stats.subdirs} subdiretórios.`
+        }
+    ];
+    
+    // Adicionar insights com intervalo para animação
+    insights.forEach((insight, index) => {
+        setTimeout(() => {
+            const insightEl = document.createElement('div');
+            insightEl.className = 'ai-insight';
+            insightEl.innerHTML = `
+                <div class="title">
+                    <span class="material-icons">psychology</span>
+                    ${insight.title}
+                </div>
+                <div class="content">${insight.content}</div>
+            `;
+            insightsContainer.appendChild(insightEl);
+            
+            // Acionar animação após inserção no DOM
+            setTimeout(() => {
+                insightEl.classList.add('visible');
+            }, 50);
+        }, index * 1000);
+    });
+}
+
+function generateDistributionInsight(stats) {
+    // Encontrar a linguagem mais comum
+    let topLanguage = "";
+    let topCount = 0;
+    
+    for (const [lang, count] of Object.entries(stats.by_language)) {
+        if (count > topCount) {
+            topCount = count;
+            topLanguage = lang;
+        }
+    }
+    
+    if (topLanguage && topCount > 0) {
+        const percentage = Math.round((topCount / stats.files) * 100);
+        return `Predominância de ${topLanguage} (${percentage}% dos arquivos). Esta distribuição indica ${percentage > 70 ? 'um sistema monolítico' : 'uma arquitetura multi-linguagem'}.`;
+    }
+    
+    return "Não foi possível determinar a distribuição predominante.";
+}
+
+function generateComplexityInsight(stats) {
+    const filesPerMethod = stats.files / Math.max(1, stats.methods);
+    
+    if (filesPerMethod < 2) {
+        return "Alta concentração de uso de CNPJ. Cada arquivo tem múltiplos métodos afetados, indicando alto acoplamento.";
+    } else if (filesPerMethod < 5) {
+        return "Distribuição moderada de uso de CNPJ. Os pontos de impacto estão distribuídos pelo sistema.";
+    } else {
+        return "Baixa densidade de uso de CNPJ. Os pontos de impacto são isolados, indicando melhor encapsulamento.";
+    }
 }
