@@ -1686,3 +1686,412 @@
 2025-04-07 16:46:39,743 - INFO - sql: 1 arquivos com CNPJ de 1 processados
 2025-04-07 16:46:39,851 - INFO - Análise concluída com sucesso. Relatório salvo em: c:\Users\renat\Documents\Python\CNPJ\reports\analise_cnpj_20250407_164639.xlsx
 2025-04-07 16:46:39,852 - INFO - 127.0.0.1 - - [07/Apr/2025 16:46:39] "POST /analyze HTTP/1.1" 200 -
+2025-04-07 16:48:54,630 - INFO - 127.0.0.1 - - [07/Apr/2025 16:48:54] "GET / HTTP/1.1" 200 -
+2025-04-07 16:48:54,648 - INFO - 127.0.0.1 - - [07/Apr/2025 16:48:54] "[36mGET /static/image/Deloitte-Logo.png HTTP/1.1[0m" 304 -
+2025-04-07 16:48:54,664 - INFO - 127.0.0.1 - - [07/Apr/2025 16:48:54] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-04-07 16:48:54,689 - INFO - 127.0.0.1 - - [07/Apr/2025 16:48:54] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-04-07 16:49:01,812 - INFO - 127.0.0.1 - - [07/Apr/2025 16:49:01] "POST /pre-analyze HTTP/1.1" 200 -
+2025-04-07 16:49:01,833 - INFO - Iniciando nova análise
+2025-04-07 16:49:01,834 - INFO - Analisando diretório: Test Code
+2025-04-07 16:49:02,247 - INFO - Analisando arquivo java: Test Code\api\CnpjRestController.java
+2025-04-07 16:49:02,248 - INFO - CNPJ encontrado no arquivo: Test Code\api\CnpjRestController.java
+2025-04-07 16:49:02,249 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-07 16:49:03,606 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:03,607 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-07 16:49:05,073 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:05,077 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-07 16:49:06,509 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:06,515 - INFO - Analisando arquivo python: Test Code\api\cnpj_api.py
+2025-04-07 16:49:06,516 - INFO - CNPJ encontrado no arquivo: Test Code\api\cnpj_api.py
+2025-04-07 16:49:06,519 - INFO - Analisando código python: Test Code\api\cnpj_api.py
+2025-04-07 16:49:07,819 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:07,825 - INFO - Analisando arquivo go: Test Code\api\cnpj_endpoints.go
+2025-04-07 16:49:07,826 - INFO - CNPJ encontrado no arquivo: Test Code\api\cnpj_endpoints.go
+2025-04-07 16:49:07,827 - INFO - Analisando código go: Test Code\api\cnpj_endpoints.go
+2025-04-07 16:49:09,187 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:09,189 - INFO - Analisando código go: Test Code\api\cnpj_endpoints.go
+2025-04-07 16:49:10,471 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:10,476 - INFO - Analisando arquivo java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-07 16:49:10,477 - INFO - CNPJ encontrado no arquivo: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-07 16:49:10,479 - INFO - Analisando código java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-07 16:49:11,851 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:11,856 - INFO - Analisando código java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-07 16:49:13,360 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:13,370 - INFO - Analisando arquivo cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:13,371 - INFO - CNPJ encontrado no arquivo: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:13,394 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:15,647 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:15,664 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:17,136 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:17,147 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:18,289 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:18,291 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:19,951 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:19,956 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:21,531 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:21,534 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-07 16:49:22,837 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:22,847 - INFO - Analisando arquivo cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:22,848 - INFO - CNPJ encontrado no arquivo: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:22,889 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:24,109 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:24,114 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:25,708 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:25,711 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:27,432 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:27,439 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:28,926 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:28,931 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:30,595 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:30,600 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:32,010 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:32,017 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:33,923 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:33,929 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:35,494 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:35,501 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-07 16:49:37,401 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:37,410 - INFO - Analisando arquivo c: Test Code\c_samples\cnpj_database.c
+2025-04-07 16:49:37,412 - INFO - CNPJ encontrado no arquivo: Test Code\c_samples\cnpj_database.c
+2025-04-07 16:49:37,417 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-07 16:49:38,915 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:38,920 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-07 16:49:41,248 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:41,253 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-07 16:49:43,507 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:43,511 - INFO - Analisando arquivo c: Test Code\c_samples\cnpj_validation.c
+2025-04-07 16:49:43,511 - INFO - CNPJ encontrado no arquivo: Test Code\c_samples\cnpj_validation.c
+2025-04-07 16:49:43,514 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-07 16:49:45,183 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:45,185 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-07 16:49:46,411 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:46,413 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-07 16:49:48,426 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:48,430 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-07 16:49:50,021 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:50,023 - INFO - Analisando arquivo csharp: Test Code\integration\CNPJService.cs
+2025-04-07 16:49:50,024 - INFO - CNPJ encontrado no arquivo: Test Code\integration\CNPJService.cs
+2025-04-07 16:49:50,025 - INFO - Analisando código csharp: Test Code\integration\CNPJService.cs
+2025-04-07 16:49:51,430 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:51,433 - INFO - Analisando código csharp: Test Code\integration\CNPJService.cs
+2025-04-07 16:49:53,151 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:53,154 - INFO - Analisando arquivo java: Test Code\Java\IntegracaoReceita.java
+2025-04-07 16:49:53,154 - INFO - CNPJ encontrado no arquivo: Test Code\Java\IntegracaoReceita.java
+2025-04-07 16:49:53,155 - INFO - Analisando código java: Test Code\Java\IntegracaoReceita.java
+2025-04-07 16:49:55,019 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:55,025 - INFO - Analisando código java: Test Code\Java\IntegracaoReceita.java
+2025-04-07 16:49:56,428 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:56,434 - INFO - Analisando arquivo java: Test Code\Java\ProcessadorFiscal.java
+2025-04-07 16:49:56,435 - INFO - CNPJ encontrado no arquivo: Test Code\Java\ProcessadorFiscal.java
+2025-04-07 16:49:56,439 - INFO - Analisando código java: Test Code\Java\ProcessadorFiscal.java
+2025-04-07 16:49:58,805 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:58,808 - INFO - Analisando código java: Test Code\Java\ProcessadorFiscal.java
+2025-04-07 16:49:59,902 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:49:59,906 - INFO - Analisando arquivo java: Test Code\Java\RepositorioCNPJ.java
+2025-04-07 16:49:59,907 - INFO - CNPJ encontrado no arquivo: Test Code\Java\RepositorioCNPJ.java
+2025-04-07 16:49:59,909 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-07 16:50:01,815 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:01,823 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-07 16:50:03,134 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:03,140 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-07 16:50:04,383 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:04,385 - INFO - Analisando arquivo java: Test Code\Java\ValidadorCNPJ.java
+2025-04-07 16:50:04,386 - INFO - CNPJ encontrado no arquivo: Test Code\Java\ValidadorCNPJ.java
+2025-04-07 16:50:04,386 - INFO - Analisando código java: Test Code\Java\ValidadorCNPJ.java
+2025-04-07 16:50:06,036 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:06,040 - INFO - Analisando código java: Test Code\Java\ValidadorCNPJ.java
+2025-04-07 16:50:07,320 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:07,323 - INFO - Analisando arquivo sql: Test Code\sql\schema.sql
+2025-04-07 16:50:07,324 - INFO - CNPJ encontrado no arquivo: Test Code\sql\schema.sql
+2025-04-07 16:50:07,325 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\sql\schema.sql
+2025-04-07 16:50:07,326 - INFO - Analisando código sql: Test Code\sql\schema.sql
+2025-04-07 16:50:09,144 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:09,150 - INFO - Analisando arquivo html: Test Code\web\cadastro.html
+2025-04-07 16:50:09,151 - INFO - CNPJ encontrado no arquivo: Test Code\web\cadastro.html
+2025-04-07 16:50:09,244 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\web\cadastro.html
+2025-04-07 16:50:09,244 - INFO - Analisando código html: Test Code\web\cadastro.html
+2025-04-07 16:50:10,532 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:10,536 - INFO - Analisando arquivo javascript: Test Code\web\validacoes.js
+2025-04-07 16:50:10,536 - INFO - CNPJ encontrado no arquivo: Test Code\web\validacoes.js
+2025-04-07 16:50:10,619 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\web\validacoes.js
+2025-04-07 16:50:10,620 - INFO - Analisando código javascript: Test Code\web\validacoes.js
+2025-04-07 16:50:12,091 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-07 16:50:12,094 - INFO - Estatísticas de processamento:
+2025-04-07 16:50:12,094 - INFO - java: 6 arquivos com CNPJ de 6 processados
+2025-04-07 16:50:12,095 - INFO - csharp: 1 arquivos com CNPJ de 1 processados
+2025-04-07 16:50:12,095 - INFO - c: 2 arquivos com CNPJ de 2 processados
+2025-04-07 16:50:12,095 - INFO - cpp: 2 arquivos com CNPJ de 2 processados
+2025-04-07 16:50:12,095 - INFO - html: 1 arquivos com CNPJ de 1 processados
+2025-04-07 16:50:12,096 - INFO - javascript: 1 arquivos com CNPJ de 1 processados
+2025-04-07 16:50:12,096 - INFO - python: 1 arquivos com CNPJ de 1 processados
+2025-04-07 16:50:12,096 - INFO - go: 1 arquivos com CNPJ de 1 processados
+2025-04-07 16:50:12,097 - INFO - sql: 1 arquivos com CNPJ de 1 processados
+2025-04-07 16:50:12,188 - INFO - Análise concluída com sucesso. Relatório salvo em: c:\Users\renat\Documents\Python\CNPJ\reports\analise_cnpj_20250407_165012.xlsx
+2025-04-07 16:50:12,189 - INFO - 127.0.0.1 - - [07/Apr/2025 16:50:12] "POST /analyze HTTP/1.1" 200 -
+2025-04-12 02:39:34,043 - INFO - Configuração do modelo de IA: anthropic 
+2025-04-12 02:39:34,359 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-12 02:39:34,360 - INFO - [33mPress CTRL+C to quit[0m
+2025-04-12 02:39:34,370 - INFO -  * Restarting with stat
+2025-04-12 02:39:36,327 - INFO - Configuração do modelo de IA: anthropic 
+2025-04-12 02:39:36,339 - WARNING -  * Debugger is active!
+2025-04-12 02:39:36,354 - INFO -  * Debugger PIN: 102-729-713
+2025-04-12 02:39:40,896 - INFO - 127.0.0.1 - - [12/Apr/2025 02:39:40] "GET / HTTP/1.1" 200 -
+2025-04-12 02:39:41,188 - INFO - 127.0.0.1 - - [12/Apr/2025 02:39:41] "GET /static/image/Deloitte-Logo.png HTTP/1.1" 200 -
+2025-04-12 02:39:41,212 - INFO - 127.0.0.1 - - [12/Apr/2025 02:39:41] "GET /static/css/style.css HTTP/1.1" 200 -
+2025-04-12 02:39:41,235 - INFO - 127.0.0.1 - - [12/Apr/2025 02:39:41] "GET /static/js/main.js HTTP/1.1" 200 -
+2025-04-12 02:39:43,702 - INFO - 127.0.0.1 - - [12/Apr/2025 02:39:43] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-04-12 02:40:03,319 - INFO - Usando modelo Anthropic Claude para análise
+2025-04-12 02:40:03,593 - INFO - 127.0.0.1 - - [12/Apr/2025 02:40:03] "POST /pre-analyze HTTP/1.1" 200 -
+2025-04-12 02:40:03,643 - INFO - Iniciando nova análise
+2025-04-12 02:40:03,644 - INFO - Analisando diretório: Test Code
+2025-04-12 02:40:04,059 - INFO - Usando modelo Anthropic Claude para análise
+2025-04-12 02:40:04,060 - INFO - Analisando arquivo java: Test Code\api\CnpjRestController.java
+2025-04-12 02:40:04,061 - INFO - CNPJ encontrado no arquivo: Test Code\api\CnpjRestController.java
+2025-04-12 02:40:04,063 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-12 02:40:06,790 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:06,823 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-12 02:40:08,923 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:08,925 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-12 02:40:10,792 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:10,795 - INFO - Analisando arquivo python: Test Code\api\cnpj_api.py
+2025-04-12 02:40:10,796 - INFO - CNPJ encontrado no arquivo: Test Code\api\cnpj_api.py
+2025-04-12 02:40:10,797 - INFO - Analisando código python: Test Code\api\cnpj_api.py
+2025-04-12 02:40:12,323 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:12,328 - INFO - Analisando arquivo go: Test Code\api\cnpj_endpoints.go
+2025-04-12 02:40:12,329 - INFO - CNPJ encontrado no arquivo: Test Code\api\cnpj_endpoints.go
+2025-04-12 02:40:12,331 - INFO - Analisando código go: Test Code\api\cnpj_endpoints.go
+2025-04-12 02:40:14,149 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:14,153 - INFO - Analisando código go: Test Code\api\cnpj_endpoints.go
+2025-04-12 02:40:15,785 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:15,791 - INFO - Analisando arquivo java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 02:40:15,793 - INFO - CNPJ encontrado no arquivo: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 02:40:15,797 - INFO - Analisando código java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 02:40:17,338 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:17,343 - INFO - Analisando código java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 02:40:19,454 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:19,458 - INFO - Analisando arquivo cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:19,459 - INFO - CNPJ encontrado no arquivo: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:19,482 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:22,071 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:22,075 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:24,135 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:24,146 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:25,401 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:25,403 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:27,152 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:27,156 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:28,836 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:28,838 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 02:40:30,380 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:30,386 - INFO - Analisando arquivo cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:30,387 - INFO - CNPJ encontrado no arquivo: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:30,403 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:32,184 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:32,187 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:33,728 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:33,733 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:35,721 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:35,725 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:37,566 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:37,571 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:39,794 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:39,800 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:41,286 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:41,290 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:43,847 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:43,852 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:45,709 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:45,716 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 02:40:47,923 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:47,933 - INFO - Analisando arquivo c: Test Code\c_samples\cnpj_database.c
+2025-04-12 02:40:47,934 - INFO - CNPJ encontrado no arquivo: Test Code\c_samples\cnpj_database.c
+2025-04-12 02:40:47,945 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-12 02:40:49,933 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:49,935 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-12 02:40:51,641 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:51,655 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-12 02:40:53,931 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:53,935 - INFO - Analisando arquivo c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 02:40:53,936 - INFO - CNPJ encontrado no arquivo: Test Code\c_samples\cnpj_validation.c
+2025-04-12 02:40:53,939 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 02:40:55,857 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:55,859 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 02:40:57,327 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:57,331 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 02:40:59,692 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:40:59,695 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 02:41:01,897 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:01,900 - INFO - Analisando arquivo csharp: Test Code\integration\CNPJService.cs
+2025-04-12 02:41:01,901 - INFO - CNPJ encontrado no arquivo: Test Code\integration\CNPJService.cs
+2025-04-12 02:41:01,905 - INFO - Analisando código csharp: Test Code\integration\CNPJService.cs
+2025-04-12 02:41:03,718 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:03,722 - INFO - Analisando código csharp: Test Code\integration\CNPJService.cs
+2025-04-12 02:41:05,521 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:05,524 - INFO - Analisando arquivo java: Test Code\Java\IntegracaoReceita.java
+2025-04-12 02:41:05,525 - INFO - CNPJ encontrado no arquivo: Test Code\Java\IntegracaoReceita.java
+2025-04-12 02:41:05,527 - INFO - Analisando código java: Test Code\Java\IntegracaoReceita.java
+2025-04-12 02:41:07,822 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:07,824 - INFO - Analisando código java: Test Code\Java\IntegracaoReceita.java
+2025-04-12 02:41:09,603 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:09,608 - INFO - Analisando arquivo java: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 02:41:09,609 - INFO - CNPJ encontrado no arquivo: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 02:41:09,613 - INFO - Analisando código java: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 02:41:11,835 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:11,838 - INFO - Analisando código java: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 02:41:13,298 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:13,302 - INFO - Analisando arquivo java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 02:41:13,303 - INFO - CNPJ encontrado no arquivo: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 02:41:13,304 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 02:41:15,391 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:15,393 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 02:41:16,766 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:16,769 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 02:41:18,148 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:18,152 - INFO - Analisando arquivo java: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 02:41:18,153 - INFO - CNPJ encontrado no arquivo: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 02:41:18,155 - INFO - Analisando código java: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 02:41:20,093 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:20,096 - INFO - Analisando código java: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 02:41:21,510 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:21,514 - INFO - Analisando arquivo sql: Test Code\sql\schema.sql
+2025-04-12 02:41:21,515 - INFO - CNPJ encontrado no arquivo: Test Code\sql\schema.sql
+2025-04-12 02:41:21,518 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\sql\schema.sql
+2025-04-12 02:41:21,520 - INFO - Analisando código sql: Test Code\sql\schema.sql
+2025-04-12 02:41:23,849 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:23,853 - INFO - Analisando arquivo html: Test Code\web\cadastro.html
+2025-04-12 02:41:23,854 - INFO - CNPJ encontrado no arquivo: Test Code\web\cadastro.html
+2025-04-12 02:41:23,895 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\web\cadastro.html
+2025-04-12 02:41:23,896 - INFO - Analisando código html: Test Code\web\cadastro.html
+2025-04-12 02:41:25,498 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:25,500 - INFO - Analisando arquivo javascript: Test Code\web\validacoes.js
+2025-04-12 02:41:25,501 - INFO - CNPJ encontrado no arquivo: Test Code\web\validacoes.js
+2025-04-12 02:41:25,564 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\web\validacoes.js
+2025-04-12 02:41:25,564 - INFO - Analisando código javascript: Test Code\web\validacoes.js
+2025-04-12 02:41:27,723 - INFO - HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+2025-04-12 02:41:27,729 - INFO - Estatísticas de processamento:
+2025-04-12 02:41:27,729 - INFO - java: 6 arquivos com CNPJ de 6 processados
+2025-04-12 02:41:27,730 - INFO - csharp: 1 arquivos com CNPJ de 1 processados
+2025-04-12 02:41:27,731 - INFO - c: 2 arquivos com CNPJ de 2 processados
+2025-04-12 02:41:27,731 - INFO - cpp: 2 arquivos com CNPJ de 2 processados
+2025-04-12 02:41:27,732 - INFO - html: 1 arquivos com CNPJ de 1 processados
+2025-04-12 02:41:27,733 - INFO - javascript: 1 arquivos com CNPJ de 1 processados
+2025-04-12 02:41:27,733 - INFO - python: 1 arquivos com CNPJ de 1 processados
+2025-04-12 02:41:27,734 - INFO - go: 1 arquivos com CNPJ de 1 processados
+2025-04-12 02:41:27,734 - INFO - sql: 1 arquivos com CNPJ de 1 processados
+2025-04-12 02:41:28,619 - INFO - Análise concluída com sucesso. Relatório salvo em: c:\Users\renat\Documents\Python\CNPJ\reports\analise_cnpj_20250412_024127.xlsx
+2025-04-12 02:41:28,620 - INFO - 127.0.0.1 - - [12/Apr/2025 02:41:28] "POST /analyze HTTP/1.1" 200 -
+2025-04-12 02:42:10,200 - INFO - 127.0.0.1 - - [12/Apr/2025 02:42:10] "GET / HTTP/1.1" 200 -
+2025-04-12 02:42:10,210 - INFO - 127.0.0.1 - - [12/Apr/2025 02:42:10] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-04-12 02:42:10,212 - INFO - 127.0.0.1 - - [12/Apr/2025 02:42:10] "[36mGET /static/image/Deloitte-Logo.png HTTP/1.1[0m" 304 -
+2025-04-12 02:42:10,216 - INFO - 127.0.0.1 - - [12/Apr/2025 02:42:10] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-04-12 03:19:30,652 - INFO - Configuração do modelo de IA: mistral (Mistral: mistral-large-latest)
+2025-04-12 03:19:30,697 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-04-12 03:19:30,697 - INFO - [33mPress CTRL+C to quit[0m
+2025-04-12 03:19:30,698 - INFO -  * Restarting with stat
+2025-04-12 03:19:32,511 - INFO - Configuração do modelo de IA: mistral (Mistral: mistral-large-latest)
+2025-04-12 03:19:32,524 - WARNING -  * Debugger is active!
+2025-04-12 03:19:32,537 - INFO -  * Debugger PIN: 102-729-713
+2025-04-12 03:19:38,235 - INFO - 127.0.0.1 - - [12/Apr/2025 03:19:38] "GET / HTTP/1.1" 200 -
+2025-04-12 03:19:38,512 - INFO - 127.0.0.1 - - [12/Apr/2025 03:19:38] "[36mGET /static/image/Deloitte-Logo.png HTTP/1.1[0m" 304 -
+2025-04-12 03:19:38,519 - INFO - 127.0.0.1 - - [12/Apr/2025 03:19:38] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2025-04-12 03:19:38,525 - INFO - 127.0.0.1 - - [12/Apr/2025 03:19:38] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2025-04-12 03:19:38,795 - INFO - 127.0.0.1 - - [12/Apr/2025 03:19:38] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-04-12 03:19:50,363 - INFO - Usando modelo Mistral API (mistral-large-latest) para análise
+2025-04-12 03:19:50,402 - INFO - 127.0.0.1 - - [12/Apr/2025 03:19:50] "POST /pre-analyze HTTP/1.1" 200 -
+2025-04-12 03:19:50,459 - INFO - Iniciando nova análise
+2025-04-12 03:19:50,460 - INFO - Analisando diretório: Test Code
+2025-04-12 03:19:50,460 - INFO - Usando modelo Mistral API (mistral-large-latest) para análise
+2025-04-12 03:19:50,462 - INFO - Analisando arquivo java: Test Code\api\CnpjRestController.java
+2025-04-12 03:19:50,463 - INFO - CNPJ encontrado no arquivo: Test Code\api\CnpjRestController.java
+2025-04-12 03:19:50,465 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-12 03:19:54,520 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-12 03:20:00,277 - INFO - Analisando código java: Test Code\api\CnpjRestController.java
+2025-04-12 03:20:04,691 - INFO - Analisando arquivo python: Test Code\api\cnpj_api.py
+2025-04-12 03:20:04,694 - INFO - CNPJ encontrado no arquivo: Test Code\api\cnpj_api.py
+2025-04-12 03:20:04,698 - INFO - Analisando código python: Test Code\api\cnpj_api.py
+2025-04-12 03:20:08,749 - INFO - Analisando arquivo go: Test Code\api\cnpj_endpoints.go
+2025-04-12 03:20:08,752 - INFO - CNPJ encontrado no arquivo: Test Code\api\cnpj_endpoints.go
+2025-04-12 03:20:08,756 - INFO - Analisando código go: Test Code\api\cnpj_endpoints.go
+2025-04-12 03:20:11,898 - INFO - Analisando código go: Test Code\api\cnpj_endpoints.go
+2025-04-12 03:20:15,501 - INFO - Analisando arquivo java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 03:20:15,502 - INFO - CNPJ encontrado no arquivo: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 03:20:15,505 - INFO - Analisando código java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 03:20:19,403 - INFO - Analisando código java: Test Code\batch\ProcessamentoCNPJ.java
+2025-04-12 03:20:21,866 - INFO - Analisando arquivo cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:21,867 - INFO - CNPJ encontrado no arquivo: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:21,886 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:26,403 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:30,106 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:34,144 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:38,096 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:43,725 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_class.cpp
+2025-04-12 03:20:48,973 - INFO - Analisando arquivo cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:20:48,974 - INFO - CNPJ encontrado no arquivo: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:20:48,985 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:20:53,693 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:20:58,560 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:03,954 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:08,636 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:13,066 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:18,116 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:23,578 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:28,386 - INFO - Analisando código cpp: Test Code\cpp_samples\cnpj_database.cpp
+2025-04-12 03:21:32,772 - INFO - Analisando arquivo c: Test Code\c_samples\cnpj_database.c
+2025-04-12 03:21:32,772 - INFO - CNPJ encontrado no arquivo: Test Code\c_samples\cnpj_database.c
+2025-04-12 03:21:32,776 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-12 03:21:38,033 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-12 03:21:42,587 - INFO - Analisando código c: Test Code\c_samples\cnpj_database.c
+2025-04-12 03:21:48,985 - INFO - Analisando arquivo c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 03:21:48,985 - INFO - CNPJ encontrado no arquivo: Test Code\c_samples\cnpj_validation.c
+2025-04-12 03:21:48,986 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 03:21:53,206 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 03:21:56,419 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 03:22:03,030 - INFO - Analisando código c: Test Code\c_samples\cnpj_validation.c
+2025-04-12 03:22:07,810 - INFO - Analisando arquivo csharp: Test Code\integration\CNPJService.cs
+2025-04-12 03:22:07,811 - INFO - CNPJ encontrado no arquivo: Test Code\integration\CNPJService.cs
+2025-04-12 03:22:07,820 - INFO - Analisando código csharp: Test Code\integration\CNPJService.cs
+2025-04-12 03:22:11,991 - INFO - Analisando código csharp: Test Code\integration\CNPJService.cs
+2025-04-12 03:22:16,568 - INFO - Analisando arquivo java: Test Code\Java\IntegracaoReceita.java
+2025-04-12 03:22:16,569 - INFO - CNPJ encontrado no arquivo: Test Code\Java\IntegracaoReceita.java
+2025-04-12 03:22:16,571 - INFO - Analisando código java: Test Code\Java\IntegracaoReceita.java
+2025-04-12 03:22:20,445 - INFO - Analisando código java: Test Code\Java\IntegracaoReceita.java
+2025-04-12 03:22:24,830 - INFO - Analisando arquivo java: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 03:22:24,831 - INFO - CNPJ encontrado no arquivo: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 03:22:24,834 - INFO - Analisando código java: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 03:22:30,904 - INFO - Analisando código java: Test Code\Java\ProcessadorFiscal.java
+2025-04-12 03:22:33,349 - INFO - Analisando arquivo java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 03:22:33,350 - INFO - CNPJ encontrado no arquivo: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 03:22:33,352 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 03:22:37,312 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 03:22:40,914 - INFO - Analisando código java: Test Code\Java\RepositorioCNPJ.java
+2025-04-12 03:22:44,714 - INFO - Analisando arquivo java: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 03:22:44,714 - INFO - CNPJ encontrado no arquivo: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 03:22:44,715 - INFO - Analisando código java: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 03:22:49,408 - INFO - Analisando código java: Test Code\Java\ValidadorCNPJ.java
+2025-04-12 03:22:54,807 - INFO - Analisando arquivo sql: Test Code\sql\schema.sql
+2025-04-12 03:22:54,808 - INFO - CNPJ encontrado no arquivo: Test Code\sql\schema.sql
+2025-04-12 03:22:54,809 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\sql\schema.sql
+2025-04-12 03:22:54,810 - INFO - Analisando código sql: Test Code\sql\schema.sql
+2025-04-12 03:22:59,846 - INFO - Analisando arquivo html: Test Code\web\cadastro.html
+2025-04-12 03:22:59,847 - INFO - CNPJ encontrado no arquivo: Test Code\web\cadastro.html
+2025-04-12 03:22:59,898 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\web\cadastro.html
+2025-04-12 03:22:59,898 - INFO - Analisando código html: Test Code\web\cadastro.html
+2025-04-12 03:23:03,456 - INFO - Analisando arquivo javascript: Test Code\web\validacoes.js
+2025-04-12 03:23:03,456 - INFO - CNPJ encontrado no arquivo: Test Code\web\validacoes.js
+2025-04-12 03:23:03,494 - INFO - Nenhum método específico com CNPJ encontrado, analisando arquivo completo: Test Code\web\validacoes.js
+2025-04-12 03:23:03,495 - INFO - Analisando código javascript: Test Code\web\validacoes.js
+2025-04-12 03:23:21,671 - INFO - Estatísticas de processamento:
+2025-04-12 03:23:21,671 - INFO - java: 6 arquivos com CNPJ de 6 processados
+2025-04-12 03:23:21,671 - INFO - csharp: 1 arquivos com CNPJ de 1 processados
+2025-04-12 03:23:21,672 - INFO - c: 2 arquivos com CNPJ de 2 processados
+2025-04-12 03:23:21,672 - INFO - cpp: 2 arquivos com CNPJ de 2 processados
+2025-04-12 03:23:21,672 - INFO - html: 1 arquivos com CNPJ de 1 processados
+2025-04-12 03:23:21,672 - INFO - javascript: 1 arquivos com CNPJ de 1 processados
+2025-04-12 03:23:21,673 - INFO - python: 1 arquivos com CNPJ de 1 processados
+2025-04-12 03:23:21,673 - INFO - go: 1 arquivos com CNPJ de 1 processados
+2025-04-12 03:23:21,673 - INFO - sql: 1 arquivos com CNPJ de 1 processados
+2025-04-12 03:23:21,817 - INFO - Análise concluída com sucesso. Relatório salvo em: c:\Users\renat\Documents\Python\CNPJ\reports\analise_cnpj_20250412_032321.xlsx
+2025-04-12 03:23:21,818 - INFO - 127.0.0.1 - - [12/Apr/2025 03:23:21] "POST /analyze HTTP/1.1" 200 -
+2025-04-12 03:24:21,008 - INFO - 127.0.0.1 - - [12/Apr/2025 03:24:21] "GET /download/analise_cnpj_20250412_032321.xlsx HTTP/1.1" 200 -

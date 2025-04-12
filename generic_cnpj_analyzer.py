@@ -4,11 +4,12 @@ import pandas as pd
 import json
 import anthropic
 from pydantic import BaseModel, Field
-from typing import List, Dict
+from typing import List, Dict, Optional
 from langchain.output_parsers import PydanticOutputParser
 import os
 from dotenv import load_dotenv
 import logging
+import requests
 
 # Configurar logging no início do arquivo
 logging.basicConfig(
@@ -34,6 +35,124 @@ class AnaliseResponse(BaseModel):
     dependencias: List[str] = Field(description="Outros métodos/classes que dependem ou são chamados")
     sistemas_impactados: List[str] = Field(description="Outros sistemas/integrações impactados")
 
+# Interface abstrata para modelos de IA
+class AIModelInterface:
+    """Interface base para os modelos de IA usados na análise de código."""
+    
+    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
+        """
+        Analisa o código usando um modelo de IA.
+        
+        Args:
+            prompt: Template de prompt a ser usado
+            language: Linguagem de programação do código
+            code: Código a ser analisado
+            context_extra: Contexto adicional como dependências
+            
+        Returns:
+            Resposta textual do modelo de IA
+        """
+        raise NotImplementedError("Este método deve ser implementado nas subclasses")
+
+# Implementação para Anthropic Claude
+class AnthropicModel(AIModelInterface):
+    def __init__(self, api_key: str):
+        self.client = anthropic.Anthropic(api_key=api_key)
+        
+    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
+        message = self.client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=1024,
+            temperature=0,
+            system="Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais.",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt.format(language=language, code=code + context_extra)
+                }
+            ]
+        )
+        return message.content[0].text
+
+# Implementação para API da Mistral
+class MistralAPIModel(AIModelInterface):
+    def __init__(self, api_key: str, model_name: str = "mistral-large-latest"):
+        self.api_key = api_key
+        self.model_name = model_name
+        self.api_url = "https://api.mistral.ai/v1/chat/completions"
+        
+    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
+        
+        # Formatar o prompt para o Mistral
+        formatted_prompt = prompt.format(language=language, code=code + context_extra)
+        
+        payload = {
+            "model": self.model_name,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais."
+                },
+                {
+                    "role": "user",
+                    "content": formatted_prompt
+                }
+            ],
+            "temperature": 0.0,
+            "max_tokens": 1024
+        }
+        
+        try:
+            response = requests.post(self.api_url, headers=headers, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            
+            if "choices" in data and len(data["choices"]) > 0:
+                message_content = data["choices"][0]["message"]["content"]
+                return message_content
+            else:
+                raise ValueError("Formato de resposta inesperado da API Mistral")
+        except Exception as e:
+            logging.error(f"Erro na comunicação com API Mistral: {str(e)}")
+            raise
+
+# Implementação para Ollama com CodeMistral
+class OllamaModel(AIModelInterface):
+    def __init__(self, base_url: str = "http://localhost:11434", model_name: str = "codellama"):
+        self.base_url = base_url
+        self.model_name = model_name
+        
+    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
+        # Formatar o prompt para o Ollama
+        formatted_prompt = prompt.format(language=language, code=code + context_extra)
+        
+        # Preparar a requisição para a API do Ollama
+        url = f"{self.base_url}/api/generate"
+        payload = {
+            "model": self.model_name,
+            "prompt": formatted_prompt,
+            "system": "Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais.",
+            "stream": False
+        }
+        
+        try:
+            response = requests.post(url, json=payload)
+            response.raise_for_status()
+            data = response.json()
+            
+            if "response" in data:
+                return data["response"]
+            else:
+                raise ValueError("Formato de resposta inesperado do Ollama")
+        except Exception as e:
+            logging.error(f"Erro na comunicação com Ollama: {str(e)}")
+            raise
+
 class GenericCNPJAnalyzer:
     """
     Analisador genérico de código que busca e analisa o uso de CNPJ em diferentes linguagens.
@@ -44,21 +163,45 @@ class GenericCNPJAnalyzer:
 
     Attributes:
         findings (list): Lista de resultados das análises
-        client (anthropic.Anthropic): Cliente para comunicação com a API do Claude
+        ai_model (AIModelInterface): Modelo de IA para análise de código
         parser (PydanticOutputParser): Parser para validação de saída
         all_methods (dict): Dicionário com todos os métodos encontrados
         supported_extensions (dict): Mapeamento de extensões para linguagens suportadas
         patterns (dict): Padrões regex para cada linguagem suportada
     """
 
-    def __init__(self):
+    def __init__(self, model_type="anthropic", ollama_url="http://localhost:11434", ollama_model="codellama", 
+                mistral_model="mistral-large-latest"):
         """
         Inicializa o analisador com as configurações padrão e carrega as variáveis de ambiente.
+        
+        Args:
+            model_type (str): Tipo de modelo a ser usado ('anthropic', 'ollama' ou 'mistral')
+            ollama_url (str): URL do servidor Ollama
+            ollama_model (str): Nome do modelo no Ollama (padrão: codellama)
+            mistral_model (str): Nome do modelo da Mistral API (padrão: mistral-large-latest)
         """
         self.findings = []
-        self.client = anthropic.Anthropic(
-            api_key=os.getenv("ANTHROPIC_API_KEY")
-        )
+        
+        # Inicializar o modelo de IA apropriado
+        if model_type.lower() == "anthropic":
+            api_key = os.getenv("ANTHROPIC_API_KEY")
+            if not api_key:
+                raise ValueError("ANTHROPIC_API_KEY não encontrada nas variáveis de ambiente")
+            self.ai_model = AnthropicModel(api_key=api_key)
+            logging.info("Usando modelo Anthropic Claude para análise")
+        elif model_type.lower() == "ollama":
+            self.ai_model = OllamaModel(base_url=ollama_url, model_name=ollama_model)
+            logging.info(f"Usando modelo Ollama ({ollama_model}) para análise")
+        elif model_type.lower() == "mistral":
+            api_key = os.getenv("MISTRAL_API_KEY")
+            if not api_key:
+                raise ValueError("MISTRAL_API_KEY não encontrada nas variáveis de ambiente")
+            self.ai_model = MistralAPIModel(api_key=api_key, model_name=mistral_model)
+            logging.info(f"Usando modelo Mistral API ({mistral_model}) para análise")
+        else:
+            raise ValueError(f"Tipo de modelo '{model_type}' não suportado. Use 'anthropic', 'ollama' ou 'mistral'.")
+            
         self.parser = PydanticOutputParser(pydantic_object=AnaliseResponse)
         self.all_methods = {}  # Armazenar todos os métodos para análise de dependências
         
@@ -166,6 +309,93 @@ IMPORTANTE:
     "dependencias": ["lista", "de", "dependencias"],
     "sistemas_impactados": ["lista", "de", "sistemas"]
 }}"""
+
+    def analyze_with_llm(self, node, file_path, start_line, language, dependencies=None):
+        """
+        Analisa um trecho de código usando o modelo de linguagem configurado.
+
+        Args:
+            node (str): Trecho de código a ser analisado
+            file_path (str): Caminho do arquivo
+            start_line (int): Número da linha inicial
+            language (str): Linguagem de programação
+            dependencies (list, optional): Lista de dependências encontradas
+
+        Returns:
+            None
+        """
+        try:
+            logging.info(f"Analisando código {language}: {file_path}")
+            
+            # Incluir dependências encontradas no prompt
+            contexto_extra = ""
+            if dependencies:
+                contexto_extra = "\nDependências encontradas:\n" + "\n".join(dependencies)
+
+            # Usar o modelo de IA configurado para análise
+            response_text = self.ai_model.analyze_code(
+                prompt=self.prompt,
+                language=language,
+                code=node,
+                context_extra=contexto_extra
+            )
+            
+            if not response_text:
+                raise ValueError("Resposta vazia do modelo de IA")
+            
+            # Encontrar o JSON na string
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            if not json_match:
+                raise ValueError("JSON não encontrado na resposta")
+                
+            json_str = json_match.group()
+            
+            # Parse do JSON
+            try:
+                analysis = json.loads(json_str)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Erro no parse do JSON: {str(e)}")
+
+            # Validar campos obrigatórios
+            required_fields = ['tipo_uso', 'operacoes_numericas', 'impactos', 
+                             'riscos', 'modificacoes', 'severidade', 'horas_desenvolvimento', 'horas_testes']
+            missing_fields = [field for field in required_fields if field not in analysis]
+            if missing_fields:
+                raise ValueError(f"Campos obrigatórios ausentes: {', '.join(missing_fields)}")
+
+            self.findings.append({
+                'arquivo': file_path,
+                'linguagem': language,
+                'metodo': self.extract_method_name(node, language),
+                'linha': start_line,
+                'tipo_uso': analysis['tipo_uso'],
+                'operacoes_numericas': "\n".join(analysis['operacoes_numericas']),
+                'impactos': "\n".join(analysis['impactos']),
+                'riscos': "\n".join(analysis['riscos']),
+                'modificacoes': "\n".join(analysis['modificacoes']),
+                'severidade': analysis['severidade'],
+                'horas_dev': analysis['horas_desenvolvimento'],
+                'horas_teste': analysis['horas_testes'],
+                'horas_total': analysis['horas_desenvolvimento'] + analysis['horas_testes'],
+                'dependencias': "\n".join(dependencies) if dependencies else "Nenhuma dependência encontrada",
+                'sistemas_impactados': "\n".join(analysis.get('sistemas_impactados', []))
+            })
+        except Exception as e:
+            logging.error(f"Erro na análise: {str(e)}")
+            self.findings.append({
+                'arquivo': file_path,
+                'linguagem': language,
+                'metodo': self.extract_method_name(node, language),
+                'tipo_uso': 'ERRO',
+                'operacoes_numericas': f'Erro na análise: {str(e)}',
+                'impactos': 'Erro na análise',
+                'riscos': 'Erro na análise',
+                'modificacoes': 'Erro na análise',
+                'severidade': 'N/A',
+                'horas_dev': 0,
+                'horas_teste': 0,
+                'horas_total': 0
+            })
 
     def scan_directory(self, directory):
         """
@@ -461,101 +691,6 @@ IMPORTANTE:
         except Exception as e:
             logging.error(f"Erro ao analisar arquivo {file_path}: {str(e)}", exc_info=True)
             return False
-
-    def analyze_with_llm(self, node, file_path, start_line, language, dependencies=None):
-        """
-        Analisa um trecho de código usando o modelo de linguagem Claude.
-
-        Args:
-            node (str): Trecho de código a ser analisado
-            file_path (str): Caminho do arquivo
-            start_line (int): Número da linha inicial
-            language (str): Linguagem de programação
-            dependencies (list, optional): Lista de dependências encontradas
-
-        Returns:
-            None
-        """
-        try:
-            logging.info(f"Analisando código {language}: {file_path}")
-            
-            # Incluir dependências encontradas no prompt
-            contexto_extra = ""
-            if dependencies:
-                contexto_extra = "\nDependências encontradas:\n" + "\n".join(dependencies)
-
-            message = self.client.messages.create(
-                model="claude-3-haiku-20240307",
-                max_tokens=1024,
-                temperature=0,
-                system="Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais.",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": self.prompt.format(language=language, code=node + contexto_extra)
-                    }
-                ]
-            )
-            
-            # Extrair e limpar JSON da resposta
-            response_text = message.content[0].text
-            
-            if not response_text:
-                raise ValueError("Resposta vazia do Claude")
-            
-            # Encontrar o JSON na string
-            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
-            if not json_match:
-                raise ValueError("JSON não encontrado na resposta")
-                
-            json_str = json_match.group()
-            
-            # Parse do JSON
-            try:
-                analysis = json.loads(json_str)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Erro no parse do JSON: {str(e)}")
-
-            # Validar campos obrigatórios
-            required_fields = ['tipo_uso', 'operacoes_numericas', 'impactos', 
-                             'riscos', 'modificacoes', 'severidade', 'horas_desenvolvimento', 'horas_testes']
-            missing_fields = [field for field in required_fields if field not in analysis]
-            if missing_fields:
-                raise ValueError(f"Campos obrigatórios ausentes: {', '.join(missing_fields)}")
-
-            self.findings.append({
-                'arquivo': file_path,
-                'linguagem': language,
-                'metodo': self.extract_method_name(node, language),
-                'linha': start_line,
-                'tipo_uso': analysis['tipo_uso'],
-                'operacoes_numericas': "\n".join(analysis['operacoes_numericas']),
-                'impactos': "\n".join(analysis['impactos']),
-                'riscos': "\n".join(analysis['riscos']),
-                'modificacoes': "\n".join(analysis['modificacoes']),
-                'severidade': analysis['severidade'],
-                'horas_dev': analysis['horas_desenvolvimento'],
-                'horas_teste': analysis['horas_testes'],
-                'horas_total': analysis['horas_desenvolvimento'] + analysis['horas_testes'],
-                'dependencias': "\n".join(dependencies) if dependencies else "Nenhuma dependência encontrada",
-                'sistemas_impactados': "\n".join(analysis.get('sistemas_impactados', []))
-            })
-        except Exception as e:
-            logging.error(f"Erro na análise: {str(e)}")
-            self.findings.append({
-                'arquivo': file_path,
-                'linguagem': language,
-                'metodo': self.extract_method_name(node, language),
-                'tipo_uso': 'ERRO',
-                'operacoes_numericas': f'Erro na análise: {str(e)}',
-                'impactos': 'Erro na análise',
-                'riscos': 'Erro na análise',
-                'modificacoes': 'Erro na análise',
-                'severidade': 'N/A',
-                'horas_dev': 0,
-                'horas_teste': 0,
-                'horas_total': 0
-            })
 
     def extract_method_name(self, method_code, language):
         """

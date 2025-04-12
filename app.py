@@ -23,7 +23,16 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
-analyzer = GenericCNPJAnalyzer()
+
+# Configuração do modelo de IA
+AI_MODEL_TYPE = os.getenv("AI_MODEL_TYPE", "anthropic")  # Valor padrão: anthropic
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "codellama")
+MISTRAL_MODEL = os.getenv("MISTRAL_MODEL", "mistral-large-latest")
+
+logging.info(f"Configuração do modelo de IA: {AI_MODEL_TYPE} " + 
+             (f"(Ollama: {OLLAMA_MODEL} em {OLLAMA_URL})" if AI_MODEL_TYPE.lower() == "ollama" else "") +
+             (f"(Mistral: {MISTRAL_MODEL})" if AI_MODEL_TYPE.lower() == "mistral" else ""))
 
 # Criar diretório reports se não existir
 REPORTS_DIR = os.path.join(os.path.dirname(__file__), 'reports')
@@ -63,7 +72,13 @@ def analyze():
         return jsonify({'error': 'Diretório não encontrado'}), 404
 
     try:
-        analyzer = GenericCNPJAnalyzer()  # Usar o analisador genérico
+        # Inicializar analisador com o modelo de IA configurado
+        analyzer = GenericCNPJAnalyzer(
+            model_type=AI_MODEL_TYPE,
+            ollama_url=OLLAMA_URL,
+            ollama_model=OLLAMA_MODEL,
+            mistral_model=MISTRAL_MODEL
+        )
         analyzer.scan_directory(directory)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
@@ -100,8 +115,13 @@ def pre_analyze():
         return jsonify({'error': 'Diretório não encontrado'}), 404
 
     try:
-        # Obter extensões suportadas do analisador
-        analyzer = GenericCNPJAnalyzer()
+        # Obter extensões suportadas do analisador com configuração do modelo
+        analyzer = GenericCNPJAnalyzer(
+            model_type=AI_MODEL_TYPE,
+            ollama_url=OLLAMA_URL,
+            ollama_model=OLLAMA_MODEL,
+            mistral_model=MISTRAL_MODEL
+        )
         supported_extensions = []
         for ext_list in analyzer.supported_extensions.values():
             supported_extensions.extend(ext_list)
