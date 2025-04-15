@@ -6,33 +6,15 @@ permitindo que usuários realizem análises de código através do navegador.
 """
 
 from flask import Flask, render_template, request, jsonify, send_file
-from generic_cnpj_analyzer import GenericCNPJAnalyzer
+from analyzer.cnpj_analyzer import GenericCNPJAnalyzer
 from datetime import datetime
-import os
 from pathlib import Path
-import re
-import logging
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('flask_app.log'),
-        logging.StreamHandler()
-    ]
-)
+import re, os, logging
+from config import AI_MODEL_TYPE, OLLAMA_URL, OLLAMA_MODEL, MISTRAL_MODEL
 
 app = Flask(__name__)
 
-# Configuração do modelo de IA
-AI_MODEL_TYPE = os.getenv("AI_MODEL_TYPE", "anthropic")  # Valor padrão: anthropic
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "codellama")
-MISTRAL_MODEL = os.getenv("MISTRAL_MODEL", "mistral-large-latest")
 
-logging.info(f"Configuração do modelo de IA: {AI_MODEL_TYPE} " + 
-             (f"(Ollama: {OLLAMA_MODEL} em {OLLAMA_URL})" if AI_MODEL_TYPE.lower() == "ollama" else "") +
-             (f"(Mistral: {MISTRAL_MODEL})" if AI_MODEL_TYPE.lower() == "mistral" else ""))
 
 # Criar diretório reports se não existir
 REPORTS_DIR = os.path.join(os.path.dirname(__file__), 'reports')
@@ -47,54 +29,6 @@ def index():
         str: HTML da página inicial
     """
     return render_template('index.html')
-
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    """
-    Rota para executar a análise completa de um diretório.
-
-    Espera receber o caminho do diretório via POST.
-    Gera um relatório Excel com os resultados.
-
-    Returns:
-        Response: JSON com status da análise e caminho do relatório
-    """
-    logging.info("Iniciando nova análise")
-    if 'directory' not in request.form:
-        logging.error("Diretório não especificado")
-        return jsonify({'error': 'Diretório não especificado'}), 400
-        
-    directory = request.form['directory']
-    logging.info(f"Analisando diretório: {directory}")
-    
-    if not os.path.exists(directory):
-        logging.error("Diretório não encontrado")
-        return jsonify({'error': 'Diretório não encontrado'}), 404
-
-    try:
-        # Inicializar analisador com o modelo de IA configurado
-        analyzer = GenericCNPJAnalyzer(
-            model_type=AI_MODEL_TYPE,
-            ollama_url=OLLAMA_URL,
-            ollama_model=OLLAMA_MODEL,
-            mistral_model=MISTRAL_MODEL
-        )
-        analyzer.scan_directory(directory)
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
-        # Gerar relatórios no diretório reports
-        excel_file = os.path.join(REPORTS_DIR, f'analise_cnpj_{timestamp}.xlsx')
-        analyzer.export_to_excel(excel_file)
-        
-        logging.info(f"Análise concluída com sucesso. Relatório salvo em: {excel_file}")
-        return jsonify({
-            'status': 'success',
-            'data': analyzer.findings,
-            'excel_file': os.path.basename(excel_file)
-        })
-    except Exception as e:
-        logging.error(f"Erro durante a análise: {str(e)}")
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/pre-analyze', methods=['POST'])
 def pre_analyze():
@@ -227,6 +161,55 @@ def pre_analyze():
         return jsonify(stats)
     except Exception as e:
         logging.error(f"Erro na pré-análise: {str(e)}", exc_info=True)
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/analyze', methods=['POST'])
+def analyze():
+    """
+    Rota para executar a análise completa de um diretório.
+
+    Espera receber o caminho do diretório via POST.
+    Gera um relatório Excel com os resultados.
+
+    Returns:
+        Response: JSON com status da análise e caminho do relatório
+    """
+    logging.info("Iniciando nova análise")
+    if 'directory' not in request.form:
+        logging.error("Diretório não especificado")
+        return jsonify({'error': 'Diretório não especificado'}), 400
+        
+    directory = request.form['directory']
+    logging.info(f"Analisando diretório: {directory}")
+    
+    if not os.path.exists(directory):
+        logging.error("Diretório não encontrado")
+        return jsonify({'error': 'Diretório não encontrado'}), 404
+
+    try:
+        # Inicializar analisador com o modelo de IA configurado
+        analyzer = GenericCNPJAnalyzer(
+            model_type=AI_MODEL_TYPE,
+            ollama_url=OLLAMA_URL,
+            ollama_model=OLLAMA_MODEL,
+            mistral_model=MISTRAL_MODEL
+        )
+        analyzer.scan_directory(directory)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        # Gerar relatórios no diretório reports
+        excel_file = os.path.join(REPORTS_DIR, f'analise_cnpj_{timestamp}.xlsx')
+        analyzer.export_to_excel(excel_file)
+        
+        logging.info(f"Análise concluída com sucesso. Relatório salvo em: {excel_file}")
+        return jsonify({
+            'status': 'success',
+            'data': analyzer.findings,
+            'excel_file': os.path.basename(excel_file)
+        })
+    except Exception as e:
+        logging.error(f"Erro durante a análise: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/download/<filename>')

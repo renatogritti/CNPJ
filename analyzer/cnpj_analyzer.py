@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 import logging
 import requests
 
+from ai import AIModelInterface, AnaliseResponse, AnthropicModel, MistralAPIModel, OllamaModel
+
 # Configurar logging no início do arquivo
 logging.basicConfig(
     level=logging.INFO,
@@ -23,135 +25,7 @@ logging.basicConfig(
 
 load_dotenv()  # Carregar variáveis do .env
 
-class AnaliseResponse(BaseModel):
-    tipo_uso: str = Field(description="Como o CNPJ é usado: NUMERICO, TEXTO, ou MISTO")
-    operacoes_numericas: List[str] = Field(description="Operações matemáticas realizadas com CNPJ")
-    impactos: List[str] = Field(description="Impactos da mudança para alfanumérico")
-    riscos: List[str] = Field(description="Riscos de compatibilidade")
-    modificacoes: List[str] = Field(description="Modificações necessárias no código")
-    severidade: str = Field(description="ALTA (quebra código), MEDIA (requer adaptação) ou BAIXA (mudança simples)")
-    horas_desenvolvimento: int = Field(description="Estimativa em horas para desenvolvimento")
-    horas_testes: int = Field(description="Estimativa em horas para testes unitários")
-    dependencias: List[str] = Field(description="Outros métodos/classes que dependem ou são chamados")
-    sistemas_impactados: List[str] = Field(description="Outros sistemas/integrações impactados")
 
-# Interface abstrata para modelos de IA
-class AIModelInterface:
-    """Interface base para os modelos de IA usados na análise de código."""
-    
-    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
-        """
-        Analisa o código usando um modelo de IA.
-        
-        Args:
-            prompt: Template de prompt a ser usado
-            language: Linguagem de programação do código
-            code: Código a ser analisado
-            context_extra: Contexto adicional como dependências
-            
-        Returns:
-            Resposta textual do modelo de IA
-        """
-        raise NotImplementedError("Este método deve ser implementado nas subclasses")
-
-# Implementação para Anthropic Claude
-class AnthropicModel(AIModelInterface):
-    def __init__(self, api_key: str):
-        self.client = anthropic.Anthropic(api_key=api_key)
-        
-    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
-        message = self.client.messages.create(
-            model="claude-3-haiku-20240307",
-            max_tokens=1024,
-            temperature=0,
-            system="Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais.",
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt.format(language=language, code=code + context_extra)
-                }
-            ]
-        )
-        return message.content[0].text
-
-# Implementação para API da Mistral
-class MistralAPIModel(AIModelInterface):
-    def __init__(self, api_key: str, model_name: str = "mistral-large-latest"):
-        self.api_key = api_key
-        self.model_name = model_name
-        self.api_url = "https://api.mistral.ai/v1/chat/completions"
-        
-    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
-        headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": f"Bearer {self.api_key}"
-        }
-        
-        # Formatar o prompt para o Mistral
-        formatted_prompt = prompt.format(language=language, code=code + context_extra)
-        
-        payload = {
-            "model": self.model_name,
-            "messages": [
-                {
-                    "role": "system",
-                    "content": "Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais."
-                },
-                {
-                    "role": "user",
-                    "content": formatted_prompt
-                }
-            ],
-            "temperature": 0.0,
-            "max_tokens": 1024
-        }
-        
-        try:
-            response = requests.post(self.api_url, headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            
-            if "choices" in data and len(data["choices"]) > 0:
-                message_content = data["choices"][0]["message"]["content"]
-                return message_content
-            else:
-                raise ValueError("Formato de resposta inesperado da API Mistral")
-        except Exception as e:
-            logging.error(f"Erro na comunicação com API Mistral: {str(e)}")
-            raise
-
-# Implementação para Ollama com CodeMistral
-class OllamaModel(AIModelInterface):
-    def __init__(self, base_url: str = "http://localhost:11434", model_name: str = "codellama"):
-        self.base_url = base_url
-        self.model_name = model_name
-        
-    def analyze_code(self, prompt: str, language: str, code: str, context_extra: str = "") -> str:
-        # Formatar o prompt para o Ollama
-        formatted_prompt = prompt.format(language=language, code=code + context_extra)
-        
-        # Preparar a requisição para a API do Ollama
-        url = f"{self.base_url}/api/generate"
-        payload = {
-            "model": self.model_name,
-            "prompt": formatted_prompt,
-            "system": "Você é um analisador de código que responde APENAS com JSON válido em uma única linha, sem formatação ou textos adicionais.",
-            "stream": False
-        }
-        
-        try:
-            response = requests.post(url, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            
-            if "response" in data:
-                return data["response"]
-            else:
-                raise ValueError("Formato de resposta inesperado do Ollama")
-        except Exception as e:
-            logging.error(f"Erro na comunicação com Ollama: {str(e)}")
-            raise
 
 class GenericCNPJAnalyzer:
     """
