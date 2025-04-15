@@ -7,6 +7,7 @@ permitindo que usuários realizem análises de código através do navegador.
 
 from flask import Flask, render_template, request, jsonify, send_file
 from analyzer.cnpj_analyzer import GenericCNPJAnalyzer
+from analyzer.reporting import ReportGenerator
 from datetime import datetime
 from pathlib import Path
 import re, os, logging
@@ -198,9 +199,10 @@ def analyze():
         analyzer.scan_directory(directory)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
-        # Gerar relatórios no diretório reports
+        # Gerar relatórios no diretório reports usando ReportGenerator
         excel_file = os.path.join(REPORTS_DIR, f'analise_cnpj_{timestamp}.xlsx')
-        analyzer.export_to_excel(excel_file)
+        report = ReportGenerator(analyzer.findings)
+        report.export_to_excel(excel_file)
         
         logging.info(f"Análise concluída com sucesso. Relatório salvo em: {excel_file}")
         return jsonify({

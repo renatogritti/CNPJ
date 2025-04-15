@@ -12,6 +12,7 @@ import logging
 import requests
 
 from ai import AIModelInterface, AnaliseResponse, AnthropicModel, MistralAPIModel, OllamaModel
+from analyzer.utils import extract_method_name, detect_language
 
 # Configurar logging no início do arquivo
 logging.basicConfig(
@@ -315,10 +316,7 @@ IMPORTANTE:
         Returns:
             str: Nome da linguagem ou None se não suportada
         """
-        for language, extensions in self.supported_extensions.items():
-            if extension in extensions:
-                return language
-        return None  # Linguagem não suportada
+        return detect_language(extension, self.supported_extensions)
     
     def analyze_file(self, file_path, language):
         """
@@ -577,29 +575,7 @@ IMPORTANTE:
         Returns:
             str: Nome do método ou 'unknown' se não encontrado
         """
-        # Padrões específicos para cada linguagem
-        patterns = {
-            'java': r'(?:public|private|protected)?\s+(?:static\s+)?[\w<>\[\]]+\s+(\w+)\s*\(',
-            'csharp': r'(?:public|private|protected|internal)?\s+(?:static\s+|virtual\s+|async\s+|override\s+|readonly\s+)?[\w<>\[\]\.]+\s+(\w+)\s*\(',
-            'c': r'[\w\*]+\s+(\w+)\s*\(',
-            'cpp': r'(?:[\w:~\*<>\[\]&]+\s+)?(\w+)\s*\(',
-            'html': r'function\s+(\w+)|(\w+)\s*=\s*function',
-            'javascript': r'function\s+(\w+)|const\s+(\w+)|let\s+(\w+)|var\s+(\w+)|(\w+)\s*:\s*function',
-            'python': r'def\s+(\w+)\s*\(',
-            'go': r'func\s+(?:\([^)]*\))?\s*(\w+)',
-            'sql': r'(?:PROCEDURE|FUNCTION)\s+(\w+)'
-        }
-        
-        pattern = patterns.get(language, r'\w+\s+(\w+)\s*\(')  # Padrão genérico como fallback
-        match = re.search(pattern, method_code, re.IGNORECASE)
-        
-        if match:
-            # Verificar todos os grupos para encontrar o nome do método
-            for group in match.groups():
-                if group and not re.match(r'(public|private|protected|internal|static|const|let|var)', group):
-                    return group
-        
-        return "unknown"
+        return extract_method_name(method_code, language)
 
     def generate_report(self):
         """
