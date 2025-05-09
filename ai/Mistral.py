@@ -1,6 +1,8 @@
 from .AiModelInterface import AIModelInterface
-import requests
+import requests  # Faltava esta importação
 import logging
+import time
+import random
 
 # Implementação para API da Mistral
 class MistralAPIModel(AIModelInterface):
@@ -35,16 +37,37 @@ class MistralAPIModel(AIModelInterface):
             "max_tokens": 1024
         }
         
-        try:
-            response = requests.post(self.api_url, headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
-            
-            if "choices" in data and len(data["choices"]) > 0:
-                message_content = data["choices"][0]["message"]["content"]
-                return message_content
-            else:
-                raise ValueError("Formato de resposta inesperado da API Mistral")
-        except Exception as e:
-            logging.error(f"Erro na comunicação com API Mistral: {str(e)}")
-            raise
+        # Implementar retry com exponential backoff
+        max_retries = 5
+        retry_count = 0
+        
+        while retry_count < max_retries:
+            try:
+                response = requests.post(self.api_url, headers=headers, json=payload)
+                response.raise_for_status()
+                
+                data = response.json()
+                if "choices" in data and len(data["choices"]) > 0:
+                    return data["choices"][0]["message"]["content"]
+                else:
+                    raise ValueError("Formato de resposta inesperado da API Mistral")
+                    
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:
+                    retry_count += 1
+                    if retry_count >= max_retries:
+                        logging.error("Limite máximo de tentativas atingido para Mistral API")
+                        raise
+                    
+                    # Exponential backoff com jitter
+                    wait_time = (2 ** retry_count) + random.uniform(0, 1)
+                    logging.warning(f"Erro 429 - Rate limit atingido. Aguardando {wait_time:.2f}s antes de tentar novamente...")
+                    time.sleep(wait_time)
+                else:
+                    logging.error(f"Erro HTTP na API Mistral: {str(e)}")
+                    raise
+            except Exception as e:
+                logging.error(f"Erro na comunicação com a API Mistral: {str(e)}")
+                raise
+                
+        raise Exception("Falha após múltiplas tentativas na API Mistral")

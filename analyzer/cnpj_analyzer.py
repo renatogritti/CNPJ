@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 import logging
 import requests
+from config import AI_MODEL_TYPE, OLLAMA_URL, OLLAMA_MODEL, MISTRAL_MODEL
 
 from ai import AIModelInterface, AnaliseResponse, AnthropicModel, MistralAPIModel, OllamaModel
 from analyzer.utils import extract_method_name, detect_language
@@ -23,8 +24,6 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-
-load_dotenv()  # Carregar variáveis do .env
 
 
 
@@ -45,8 +44,8 @@ class GenericCNPJAnalyzer:
         patterns (dict): Padrões regex para cada linguagem suportada
     """
 
-    def __init__(self, model_type="anthropic", ollama_url="http://localhost:11434", ollama_model="codellama", 
-                mistral_model="mistral-large-latest"):
+    def __init__(self, model_type=AI_MODEL_TYPE, ollama_url=OLLAMA_URL, ollama_model=OLLAMA_MODEL, 
+                mistral_model=MISTRAL_MODEL):
         """
         Inicializa o analisador com as configurações padrão e carrega as variáveis de ambiente.
         
@@ -58,6 +57,8 @@ class GenericCNPJAnalyzer:
         """
         self.findings = []
         
+
+            
         # Inicializar o modelo de IA apropriado
         if model_type.lower() == "anthropic":
             api_key = os.getenv("ANTHROPIC_API_KEY")

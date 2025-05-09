@@ -11,7 +11,8 @@ logging.basicConfig(
 )
 
 # Configuração do modelo de IA
-AI_MODEL_TYPE = os.getenv("AI_MODEL_TYPE", "anthropic")  # Valor padrão: anthropic
+AI_MODEL_TYPE = os.getenv("AI_MODEL_TYPE", "anthropic") # Valor padrão: anthropic
+print(f"AI_MODEL_TYPE: {AI_MODEL_TYPE}")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "codellama")
 MISTRAL_MODEL = os.getenv("MISTRAL_MODEL", "mistral-large-latest")
