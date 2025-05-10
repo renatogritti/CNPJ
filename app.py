@@ -15,8 +15,6 @@ from config import AI_MODEL_TYPE, OLLAMA_URL, OLLAMA_MODEL, MISTRAL_MODEL
 
 app = Flask(__name__)
 
-
-
 # Criar diretório reports se não existir
 REPORTS_DIR = os.path.join(os.path.dirname(__file__), 'reports')
 os.makedirs(REPORTS_DIR, exist_ok=True)
@@ -163,7 +161,6 @@ def pre_analyze():
     except Exception as e:
         logging.error(f"Erro na pré-análise: {str(e)}", exc_info=True)
         return jsonify({'error': str(e)}), 500
-
 
 @app.route('/analyze', methods=['POST'])
 def analyze():

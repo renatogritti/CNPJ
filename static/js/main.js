@@ -1,12 +1,9 @@
 async function openDirectoryDialog() {
-    try {
-        const handle = await window.showDirectoryPicker();
-        const directory = handle.name;
-        document.getElementById('directory').value = directory;
-        document.querySelector('.btn-analyze').classList.add('pulse');
-    } catch (err) {
-        showError('Erro ao selecionar diretório');
-    }
+    // Tornar o campo editável
+    const directoryInput = document.getElementById('directory');
+    directoryInput.readOnly = false;
+    directoryInput.focus();
+    document.querySelector('.btn-analyze').classList.add('pulse');
 }
 
 async function retryFetch(url, options, maxRetries = 3) {
@@ -667,5 +664,31 @@ function generateComplexityInsight(stats) {
         return "Distribuição moderada de uso de CNPJ. Os pontos de impacto estão distribuídos pelo sistema.";
     } else {
         return "Baixa densidade de uso de CNPJ. Os pontos de impacto são isolados, indicando melhor encapsulamento.";
+    }
+}
+
+async function* getFilesRecursively(dirHandle) {
+    for await (const entry of dirHandle.values()) {
+        if (entry.kind === "file") {
+            yield entry;
+        } else if (entry.kind === "directory") {
+            yield* getFilesRecursively(entry);
+        }
+    }
+}
+
+async function getAllFiles(directory) {
+    try {
+        const dirHandle = await window.showDirectoryPicker({
+            startIn: directory
+        });
+        const files = [];
+        for await (const file of getFilesRecursively(dirHandle)) {
+            files.push(file);
+        }
+        return files;
+    } catch (error) {
+        console.error('Erro ao listar arquivos:', error);
+        return [];
     }
 }

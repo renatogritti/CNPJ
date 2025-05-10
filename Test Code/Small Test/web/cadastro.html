@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cadastro de Empresa</title>
+</head>
+<body>
+    <form id="empresaForm" onsubmit="return validarFormulario()">
+        <div>
+            <label>CNPJ (somente números):</label>
+            <input type="number" id="cnpj" name="cnpj" 
+                   min="1" max="99999999999999" 
+                   oninput="formatarCNPJ(this)">
+        </div>
+        <div>
+            <label>Matriz CNPJ (se filial):</label>
+            <input type="number" id="matrizCnpj" name="matrizCnpj">
+        </div>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <script src="validacoes.js"></script>
+</body>
+</html>
