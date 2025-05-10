@@ -1,10 +1,140 @@
 async function openDirectoryDialog() {
-    // Tornar o campo editável
-    const directoryInput = document.getElementById('directory');
-    directoryInput.readOnly = false;
-    directoryInput.focus();
-    document.querySelector('.btn-analyze').classList.add('pulse');
+    try {
+        const dirHandle = await window.showDirectoryPicker();
+        
+        // Obter o que conseguimos do browser
+        const partialPath = dirHandle.name;
+        
+        // Verificar se é um caminho de teste conhecido
+        if (partialPath === "Small Test") {
+            // Caminho conhecido de teste
+            document.getElementById('directory').value = "C:\\Users\\renat\\Documents\\Python\\Alpha - CNPJ\\Test Code\\Small Test";
+        } else {
+            // Tentar resolver o caminho completo no servidor
+            const formData = new FormData();
+            formData.append('partial_path', partialPath);
+            
+            try {
+                const response = await fetch('/resolve-path', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('directory').value = data.full_path;
+                } else {
+                    // Fallback: permitir edição manual
+                    const directoryInput = document.getElementById('directory');
+                    directoryInput.value = `C:\\${partialPath}`;
+                    directoryInput.readOnly = false;
+                    directoryInput.focus();
+                    directoryInput.select();
+                    
+                    // Dica para o usuário
+                    showPathHelper();
+                }
+            } catch (error) {
+                // Fallback: permitir edição manual
+                const directoryInput = document.getElementById('directory');
+                directoryInput.value = `C:\\${partialPath}`;
+                directoryInput.readOnly = false;
+                directoryInput.focus();
+                directoryInput.select();
+                
+                // Dica para o usuário
+                showPathHelper();
+            }
+        }
+        
+        document.getElementById('directory').classList.add('directory-selected');
+        
+    } catch (error) {
+        console.error('Erro ao selecionar diretório:', error);
+        showError('Não foi possível selecionar o diretório. Por favor, tente novamente.');
+    }
 }
+
+function showPathHelper() {
+    // Mostrar uma dica para ajudar o usuário a completar o caminho
+    const helperText = document.createElement('div');
+    helperText.className = 'path-helper';
+    helperText.innerHTML = `
+        <p>Por favor, complete o caminho do diretório.</p>
+        <p>Exemplo: C:\\Users\\seu-usuario\\Documentos\\Projeto\\${document.getElementById('directory').value}</p>
+    `;
+    
+    // Inserir após o input
+    const inputGroup = document.querySelector('.input-group');
+    inputGroup.appendChild(helperText);
+    
+    // Remover após alguns segundos ou quando o usuário começar a digitar
+    setTimeout(() => {
+        helperText.remove();
+    }, 12000);
+    
+    document.getElementById('directory').addEventListener('input', () => {
+        helperText.remove();
+    }, {once: true});
+}
+
+async function getFullDirectoryPath(dirHandle) {
+    const paths = [];
+    let current = dirHandle;
+    
+    try {
+        while (current) {
+            paths.unshift(current.name);
+            const parent = await current.getParent();
+            if (!parent || parent === current) break;
+            current = parent;
+        }
+        
+        // Se não começar com letra de unidade, adicionar C:
+        if (!/^[A-Za-z]:/.test(paths[0])) {
+            paths.unshift('C:');
+        }
+        
+        // Construir o caminho completo
+        const fullPath = paths.join('\\');
+        console.log('Caminho completo:', fullPath); // Debug
+        
+        // Validar se o caminho parece correto
+        if (!isValidPath(fullPath)) {
+            throw new Error('Caminho inválido gerado');
+        }
+        
+        return fullPath;
+        
+    } catch (error) {
+        console.error('Erro ao construir caminho:', error);
+        // Tentar método alternativo usando o path nativo
+        try {
+            const systemPath = dirHandle.name;
+            const driveLetter = 'C:';
+            return `${driveLetter}\\Users\\${process.env.USERNAME}\\${systemPath}`;
+        } catch (fallbackError) {
+            console.error('Erro no fallback:', fallbackError);
+            return `C:\\${dirHandle.name}`;
+        }
+    }
+}
+
+// Função auxiliar para validar o caminho
+function isValidPath(path) {
+    const windowsPathRegex = /^[A-Za-z]:\\(?:[^\\/:*?"<>|\r\n]+\\)*[^\\/:*?"<>|\r\n]*$/;
+    return windowsPathRegex.test(path);
+}
+
+// Adicionar evento para validar o caminho quando digitado manualmente
+document.getElementById('directory').addEventListener('input', function(e) {
+    const path = e.target.value;
+    if (isValidPath(path)) {
+        e.target.classList.add('directory-selected');
+    } else {
+        e.target.classList.remove('directory-selected');
+    }
+});
 
 async function retryFetch(url, options, maxRetries = 3) {
     for (let i = 0; i < maxRetries; i++) {

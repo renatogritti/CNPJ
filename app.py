@@ -228,5 +228,28 @@ def download(filename):
         download_name=filename
     )
 
+@app.route('/resolve-path', methods=['POST'])
+def resolve_path():
+    """Resolver caminho parcial para caminho completo"""
+    if 'partial_path' not in request.form:
+        return jsonify({'error': 'Caminho parcial não especificado'}), 400
+        
+    partial_path = request.form['partial_path']
+    
+    # Locais comuns para procurar
+    common_locations = [
+        os.path.join(os.path.expanduser('~'), 'Documents', 'Python', 'Alpha - CNPJ', 'Test Code'),
+        os.path.join(os.path.dirname(__file__), 'Test Code'),
+        os.path.join(os.getcwd(), 'Test Code')
+    ]
+    
+    for location in common_locations:
+        potential_path = os.path.join(location, partial_path)
+        if os.path.exists(potential_path):
+            return jsonify({'full_path': potential_path})
+    
+    # Se não encontrar, retornar o parcial com C:
+    return jsonify({'full_path': f'C:\\{partial_path}'})
+
 if __name__ == '__main__':
     app.run(debug=True)

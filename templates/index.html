@@ -52,9 +52,16 @@
                     <form id="analyzeForm">
                         <div class="input-container">
                             <div class="input-group">
-                                <input type="text" id="directory" name="directory" placeholder="Digite ou cole o caminho completo do diretório (ex: C:\Projeto\src)">
-                                <button type="button" class="btn-browse" onclick="openDirectoryDialog()">
-                                    <span class="material-icons">edit</span>
+                                <input type="text" 
+                                       id="directory" 
+                                       name="directory" 
+                                       placeholder="Selecione um diretório para análise" 
+                                       readonly>
+                                <button type="button" 
+                                        class="btn-browse" 
+                                        onclick="openDirectoryDialog()">
+                                    <span class="material-icons">folder_open</span>
+                                    <span>Selecionar</span>
                                 </button>
                             </div>
                             <button type="submit" class="btn-analyze pulse">
